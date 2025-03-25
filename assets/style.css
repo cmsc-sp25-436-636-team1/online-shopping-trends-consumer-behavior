@@ -1,0 +1,57 @@
+* {
+    font-family: 'Roboto';
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+
+#page {
+    background-color: rgb(244, 244, 244);
+}
+
+#github-logo {
+    height: 28px;
+    width: auto;
+}
+
+.navbar-nav {
+    align-items: center
+}
+
+.align-center {
+    display: flex;
+    align-items: center;
+}
+
+.dashboard-row {
+    height: 536px;
+}
+
+.figure-card {
+    height: 520px;
+    border: 1px solid #dee2e6;
+    /* or whatever your theme uses */
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+#attribution {
+    text-align: right;
+}
+
+#attribution>p {
+    margin: 0;
+}
+
+#about-modal {
+    max-height: 90%;
+    overflow-y: scroll;
+}
+
+@media (max-width: 320px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+}
