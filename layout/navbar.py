@@ -10,7 +10,7 @@ navbar = dbc.NavbarSimple(
                     alt="Source Code",
                     id="github-logo",
                 ),
-                href="https://github.com/wnhoj/streaming-metrics",
+                href="https://github.com/cmsc-sp25-436-636-team1/online-shopping-trends-consumer-behavior",
                 target="_blank",
                 className="p-1",
             )
