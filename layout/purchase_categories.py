@@ -36,7 +36,7 @@ df_sep_cat = df.explode("purch_cat_list").copy()
 x_axis = ["Multiple times a week", "Once a week", "Few times a month", "Once a month", "Less than once a month"]
 
 # Discrete color map based on gender
-bubble_colors = {"female": "#e976aa", "male": "#1d76b5", "others": "#a4a4a4", "prefer not to say": "#4f4f4f"}
+bubble_colors = {"Female": "#e976aa", "Male": "#1d76b5", "Others": "#a4a4a4", "Prefer not to say": "#4f4f4f"}
 
 # Grouping by relevant categories to get count of occurrences
 df_with_counts = (
@@ -74,18 +74,18 @@ fig.update_layout(xaxis_title='Purchase Frequency')
 fig.update_layout(yaxis_title='Age Group')
 
 # Add caption
-fig.add_annotation(
-    x=0.5,
-    y=-0.2,
-    xref='paper',
-    yref='paper',
-    # text='The figure above displays the top purchase categories based on age group, purchase frequency, and gender. The x axis displays the purchase frequency with</br></br>'
-    #      ' the y axis displaying the age group. The bubbles are colored according to gender with an accompanying legend on the side. The size of the bubble increases</br>'
-    #      ' based on the more matches there are for age group, gender, purchase frequency, and purchase category. Hover over the bubbles for more detailed information!',
-    showarrow=False,
-    align='center',
-    font=dict(size=8)
-)
+# fig.add_annotation(
+#     x=0.5,
+#     y=-0.2,
+#     xref='paper',
+#     yref='paper',
+#     # text='The figure above displays the top purchase categories based on age group, purchase frequency, and gender. The x axis displays the purchase frequency with</br></br>'
+#     #      ' the y axis displaying the age group. The bubbles are colored according to gender with an accompanying legend on the side. The size of the bubble increases</br>'
+#     #      ' based on the more matches there are for age group, gender, purchase frequency, and purchase category. Hover over the bubbles for more detailed information!',
+#     showarrow=False,
+#     align='center',
+#     font=dict(size=8)
+# )
 
 
 purchase_categories_card = FigureCard(
