@@ -106,9 +106,9 @@ purchase_categories = dbc.Row(
     [
         dbc.Col(html.H1("Top Purchase Categories Breakdown"), width=12),
         html.P("""
-               The figure blow displays the top purchase categories based on age group, purchase frequency, and gender. The x axis displays the purchase frequency with</br></br>'
-         ' the y axis displaying the age group. The bubbles are colored according to gender with an accompanying legend on the side. The size of the bubble increases</br>'
-         ' based on the more matches there are for age group, gender, purchase frequency, and purchase category. Hover over the bubbles for more detailed information!
+               The figure blow displays the top purchase categories based on age group, purchase frequency, and gender. The x axis displays the purchase frequency with
+         the y axis displaying the age group. The bubbles are colored according to gender with an accompanying legend on the side. The size of the bubble increases
+         based on the more matches there are for age group, gender, purchase frequency, and purchase category. Hover over the bubbles for more detailed information!
                """),
         dbc.Col(purchase_categories_card, width=12),
     ],

@@ -92,7 +92,7 @@ gender = dbc.Row(
         toggle_buttons,
         dbc.Col(storyboard_container, width=12),
     ],
-    id="purchase-storyboard",
+    id="gender",
     className="p-3"
 )
 
