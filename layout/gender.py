@@ -39,7 +39,6 @@ fig_overview = px.bar(
     y='purchase_categories',
     color='gender',
     orientation='h',
-    title="Overview: Purchase Categories by Gender",
     template="plotly_white"
 )
 
@@ -50,7 +49,6 @@ fig_compare = px.bar(
     color='gender',
     facet_col='gender',
     orientation='h',
-    title="Compare Purchase Categories by Gender",
     template="plotly_white"
 )
 
@@ -58,7 +56,6 @@ fig_summary = px.pie(
     summary,
     values='total_purchases',
     names='gender',
-    title="Total Purchases by Gender",
     template="plotly_white"
 )
 
@@ -75,17 +72,25 @@ toggle_buttons = dbc.Row(
         width="auto", 
         className="text-center"
     ),
-    justify="center",
+    justify="left",
 )
 
 
 storyboard_container = html.Div(id='storyboard-container')
 
-gender = dbc.Container(
+gender = dbc.Row(
     [
-        html.H2("Amazon Consumer Behavior Storyboard"),
+        dbc.Col(html.H1("Gender Data Storyboard"), width=12),
+        html.P("""
+        The storyboard allows user interaction with visual transitions and multi-view comparisons. 
+        It targets the theme of animation by having buttons for the user to transition between each view, sliders for time, 
+        and coordinated views to compare multiple attributes like purchase frequency and age group. 
+        It also supports tasks like analyzing correlations by having the user go through views and seeing category shifts. 
+        A trade off I noticed was prioritizing categorical comparison over more complex filters to keep the transitions smooth and get the information across without having too much going on.
+
+        """),
         toggle_buttons,
-        storyboard_container
+        dbc.Col(storyboard_container, width=12),
     ],
     id="purchase-storyboard",
     className="p-3"

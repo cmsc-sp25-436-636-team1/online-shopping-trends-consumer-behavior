@@ -36,7 +36,13 @@ fig_heatmap = px.imshow(
 )
 
 purchase_vs_browse = dbc.Row([
-    html.H2("Purchase vs Browsing Frequency", id="purfreq",),
+
+    dbc.Col(html.H1("Purchase vs Browsing Frequency"),id="purfreq", width=12),
+    html.P("""
+           For the heatmap, with interactivity support, you can hover over each cell to see the value.
+           We can see that the common case is that people like to browse a few times a week and like to purchase a few times a month.
+
+           """),
     dbc.Col(
         FigureCard(
             id="heatmap-purchase-browsing",

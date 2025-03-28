@@ -1,8 +1,12 @@
 import dash_bootstrap_components as dbc
-from dash import html
+from dash import Input, Output, State, html
 
 navbar = dbc.NavbarSimple(
     [
+        dbc.NavItem(
+            dbc.NavLink("Dashboard", href="/dashboard"),
+            class_name="d-flex align-items-center"
+        ),
         dbc.NavItem(
             dbc.NavLink(
                 html.Img(
@@ -14,6 +18,8 @@ navbar = dbc.NavbarSimple(
                 target="_blank",
                 className="p-1",
             )
+            ,
+            class_name="d-flex align-items-center"
         ),
         dbc.NavItem(
             dbc.NavLink(
@@ -35,3 +41,5 @@ navbar = dbc.NavbarSimple(
     color="dark",
     dark=True,
 )
+
+

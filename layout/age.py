@@ -7,7 +7,9 @@ import plotly.express as px
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
-from .components.MetricCard import MetricCard
+from dash import html, dcc, Output, Input, callback_context
+
+# Import your custom FigureCard component
 from .components.FigureCard import FigureCard
 
 load_dotenv()
@@ -21,6 +23,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 with SessionLocal() as session:
     df = pd.read_sql("SELECT * FROM amz_customer_behavior", con=session.bind)
 
+# Prepare figures
 age_counts = df.groupby("age")["id"].count().reset_index()
 age_counts.columns = ["age", "purchase_count"]
 
@@ -49,14 +52,23 @@ age_cat_counts["Age_Categories"] = pd.Categorical(
     age_cat_counts["Age_Categories"], categories=category_order, ordered=True
 )
 
+fig_default = px.bar(
+    age_counts,
+    x="age",
+    y="purchase_count",
+    title="Purchases by Age",
+    template="plotly_white",
+    labels={"purchase_count": "# purchases"}
+)
+
 fig_age_cat = px.bar(
     age_cat_counts.sort_values("Age_Categories"),
     x="Age_Categories",
     y="purchase_count",
     title="Derived Age Categories Data",
-    labels={"purchase_count": "# purchases"},
     text="purchase_count",
-    template="plotly_white"
+    template="plotly_white",
+    labels={"purchase_count": "# purchases"}
 )
 
 fig_age_cat_sorted = px.bar(
@@ -64,53 +76,75 @@ fig_age_cat_sorted = px.bar(
     x="Age_Categories",
     y="purchase_count",
     title="Sorted Derived Age Categories Data",
-    labels={"purchase_count": "# purchases"},
     text="purchase_count",
-    template="plotly_white"
+    template="plotly_white",
+    labels={"purchase_count": "# purchases"}
 )
 
-
-fig = px.bar(age_counts, x="age", y="purchase_count", title="Purchases by Age", template="plotly_white",
+toggle_buttons = dbc.Row(
+    dbc.Col(
+        dbc.ButtonGroup(
+            [
+                dbc.Button("Default", id='btn-age-default', n_clicks=0),
+                dbc.Button("Grouped", id='btn-age-group', n_clicks=0),
+                dbc.Button("Sort Grouped", id='btn-age-sort-group', n_clicks=0),
+            ],
+            className="mb-3"
+        ),
+        width="auto", 
+        className="text-center"
+    ),
+    justify="left",
 )
 
+age_card = FigureCard(
+    id="age-figure",
+    title="Age Data Transformation",        
+    figure=fig_default,              
+    description="This chart shows how many purchases were made by each age group."
+)
 
 age = dbc.Row(
-    children=[
-        dbc.Col(
-            dbc.Row(
-                [
-                    dbc.Col(html.H1("Age"), width=12),
-                ]
-            ),
-        ),
-        dbc.Col(
-            FigureCard(
-                id="age",
-                title="Purchases by Age",
-                figure=fig,
-                description="This chart shows how many purchases were made by each age group."
-            ),
-            width=12,
-        ),
-        dbc.Col(
-            FigureCard(
-                id="age-categories",
-                title="Derived Age Categories Data",
-                figure=fig_age_cat,
-                description="Grouped ages into categories like Teenager, Adult, etc., and counted purchases."
-            ),
-            width=12,
-        ),
-        dbc.Col(
-            FigureCard(
-                id="age-categories-sorted",
-                title="Sorted Derived Age Categories Data",
-                figure=fig_age_cat_sorted,
-                description="Same age categories sorted by number of purchases."
-            ),
-            width=12,
-        ),
+    [
+        dbc.Col(html.H1("Age Data Breakdown"), width=12),
+        html.P("""
+               For the task of Analyze & produce, Trends between age & gender for purchase frequency and purchase category and find Distribution of age and gender with # of purchases. In our dataset, Age (Customer’s age in years (quantitative/ integer))  would be the appropriate candidate for data transformation. 
+               From the quantitative data attribute, we could group them by bins (range 0-10, 10-20, 20-30, etc). Keys are now bins, values are counts. On top of that, we could make it semantic by converting Age from quantitative to ordinal. 
+               For example, we could derived
+                0-10: Child
+                10-20: Teenager
+                20-30: Young adult 
+                30-40: Adult
+                40-50: Middle-age
+                50+: Older Adult
+
+               """),
+        toggle_buttons,
+        dbc.Col(age_card, width=12),
     ],
-    id="age",
+    id="age"
 )
 
+def register_age_callbacks(app):
+    @app.callback(
+        Output({"type": "graph", "index": "age-figure"}, "figure"),  # Use MATCH or literal match
+        [
+            Input("btn-age-default", "n_clicks"),
+            Input("btn-age-group", "n_clicks"),
+            Input("btn-age-sort-group", "n_clicks"),
+        ]
+    )
+    def update_age_figure(n_default, n_group, n_sort_group):
+        ctx = callback_context
+        if not ctx.triggered:
+            return fig_default
+        button_id = ctx.triggered[0]["prop_id"].split('.')[0]
+
+        if button_id == "btn-age-default":
+            return fig_default
+        elif button_id == "btn-age-group":
+            return fig_age_cat
+        elif button_id == "btn-age-sort-group":
+            return fig_age_cat_sorted
+        else:
+            return fig_default

@@ -11,9 +11,10 @@ def sidebar():
             dbc.Nav(
                 [
                     html.A("Overview", href="#overview", className="link-underline link-underline-opacity-0"),
-                    html.A("Age", href="#age", className="link-underline link-underline-opacity-0"),
-                    html.A("Gender", href="#gender", className="link-underline link-underline-opacity-0"),
+                    html.A("Age Data Breakdown", href="#age", className="link-underline link-underline-opacity-0"),
+                    html.A("Gender Data Storyboard", href="#gender", className="link-underline link-underline-opacity-0"),
                     html.A("Purchase vs Browsing Frequency", href="#purfreq", className="link-underline link-underline-opacity-0"),
+                    html.A("Top Purchase Categories Breakdown", href="#purchase_categories", className="link-underline link-underline-opacity-0"),
                 ],
                 vertical=True,
                 pills=True,

@@ -6,6 +6,7 @@ from .components.MetricCard import MetricCard
 from .components.FigureCard import FigureCard
 from layout.table_overview import table
 
+
 overview = dbc.Row(
     dbc.Col(
         [
@@ -30,7 +31,18 @@ overview = dbc.Row(
                     dbc.Col(MetricCard("Keys (Records)", id="dataset-type", value="602"), width=4),
                 ]
             ),
-            table,
+             dbc.Button(
+                "Show details",
+                id="collapse-button",
+                className="mb-3",
+                color="primary",
+                n_clicks=0,
+            ),
+            dbc.Collapse(
+                table,
+                id="collapse",
+                is_open=False,
+            ),
             
             
         ],
