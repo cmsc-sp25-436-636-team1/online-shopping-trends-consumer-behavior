@@ -28,7 +28,8 @@ table_rows = [
     ("rating_accuracy", "How would you rate the relevance and accuracy of the recommendations you receive?"),
     ("shopping_satisfaction", "How satisfied are you with your overall shopping experience on Amazon?"),
     ("service_appreciation", "What aspects of Amazon's services do you appreciate the most?"),
-    ("improvement_areas", "Are there any areas where you think Amazon can improve?")
+    ("improvement_areas", "Are there any areas where you think Amazon can improve?"),
+    ("age_category", "Age categories computed from age" )
 ]
 
 # Build Table Body
