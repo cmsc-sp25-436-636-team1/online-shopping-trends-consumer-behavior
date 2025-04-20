@@ -8,7 +8,7 @@ html {
 
 
 #page {
-    background-color: rgb(244, 244, 244);
+    /* background-color: rgb(244, 244, 244); */
 }
 
 #github-logo {
@@ -50,9 +50,17 @@ html {
     overflow-y: scroll;
 }
 
+.bg-primary {
+    background-color: #F8F6F3 !important;
+}
+
+#intro-container {
+    background-color: #F8F6F3 !important;
+}
+
 .header-span {
     display: inline-block;
-    background-color: #0B2838;
+    /* background-color: #0B2838; */
     justify-content: center;
     width: max-content;
     align-items: center;
@@ -63,7 +71,7 @@ html {
 }
 
 .header-span h1 {
-    color: #E89C31;
+    color: #0732EF;
     margin-top: 4px;
     margin-bottom: 2px;
     margin-right: 8px;
@@ -74,19 +82,24 @@ html {
 
 .nav-header-span-class {
     display: inline-block;
-    background-color: #E89C31;
-    font-style: italic;
+    /* background-color: #0732EF; */
+    /* font-style: italic; */
     text-align: center;
     align-items: center;
     width: max-content;
     height: max-content;
     justify-content: center;
-    transform: skew(-15deg);
+    /* transform: skew(-15deg); */
 }
 
+.nav-link {
+    color: #0732EF;
+}
+
+
 .nav-header-span-class h5 {
-    color: #0B2838;
-    transform: skew(15deg);
+    color: #0732EF;
+    /* transform: skew(15deg); */
     margin-left: 2px;
     margin-right: 5px;
     margin-top: 0px;
@@ -95,8 +108,8 @@ html {
 
 .nav-header-desc-pill {
 
-    background-color: #E89C31 !important;
-    color: #0B2838 !important;
+    /* background-color: #0732EF !important; */
+    color: #0732EF !important;
     border-radius: 30px !important;
     opacity: 1 !important;
     padding: 4px 6px !important;
@@ -150,7 +163,7 @@ html {
 .accordion-button:not(.collapsed) {
     /* background-color: #A2D2FF;
     color: #0B2838; */
-    background-color: #E89C31;
+    /* background-color: #0732EF; */
     color: #0B2838;
     font-weight: bold;
     border-width: medium;
@@ -192,7 +205,7 @@ html {
 .home-banner-title-text {
 
     font-size: x-large;
-    color: #E89C31;
+    color: #0732EF;
     font-size: 3em;
     font-weight: 800;
 }
@@ -209,7 +222,7 @@ html {
 
 .home-banner-title-italics {
     display: inline-block;
-    background-color: #E89C31;
+    /* background-color: #0732EF; */
     justify-content: center;
     width: fit-content;
     align-items: center;
@@ -352,7 +365,7 @@ html {
 
 .busy-trips-header-home-page {
 
-    background-color: #E89C31;
+    /* background-color: #0732EF; */
     width: max-content;
     text-align: center;
     align-items: center;
@@ -504,7 +517,7 @@ html {
 .home-page-info-col span {
 
     display: flex;
-    background-color: #E89C31;
+    /* background-color: #0732EF; */
     border-radius: 100%;
     border-color: rgba(33, 37, 41, 1);
     border-width: 4px;
@@ -599,4 +612,89 @@ html {
     h1 {
         font-size: 1.2rem;
     }
+}
+
+/* assets/style.css (unchanged) */
+.section {
+    padding: 4rem 0;
+}
+
+.section-light {
+    background-color: #faf9f5;
+}
+
+.section-accent {
+    background-color: #BCC5F2;
+}
+
+.section-primary {
+    background-color: #0732EF;
+    color: #fff;
+}
+
+.section .container {
+    max-width: 960px;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.metric-card {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: .5rem;
+    width: 300px;
+    /* force nice width */
+    margin: 0 1rem;
+    /* gutter between cards */
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: .25rem;
+}
+
+.metric-label {
+    font-size: 1rem;
+    color: #666;
+}
+
+.process-row {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.step-num {
+    text-align: right;
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.step-title {
+    font-size: 1.1rem;
+    padding-left: .75rem;
+}
+
+.step-desc {
+    font-size: .95rem;
+    color: #fff;
+    padding-left: .75rem;
+}
+
+.dashboard-desc {
+    font-size: 1.1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.btn-dashboard {
+    max-width: 260px;
 }

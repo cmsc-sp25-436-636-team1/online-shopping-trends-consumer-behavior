@@ -28,7 +28,7 @@ navbar = dbc.NavbarSimple(
                         "info",
                         className="material-symbols-outlined d-flex nav-span",
                     ),
-                    color="dark",
+                    # color="dark",
                     id="page-info-btn",
                     n_clicks=0,
                 )
@@ -38,8 +38,6 @@ navbar = dbc.NavbarSimple(
     brand="Online Shopping Trends & Consumer Behavior",
     brand_href="/",
     id="navbar",
-    color="dark",
-    dark=True,
 )
 
 

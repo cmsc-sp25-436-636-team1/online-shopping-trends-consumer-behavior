@@ -13,11 +13,11 @@ def navbar_named(page_name):
 
     if page_name == 'Home':
 
-        nav_class = 'p-2 w-95vw'
+        nav_class = 'w-95vw'
 
     else: 
 
-        nav_class = 'p-2 w-95vw mb-2'
+        nav_class = 'w-95vw'
 
     named_navbar = page_name
 
@@ -26,31 +26,30 @@ def navbar_named(page_name):
 
         dbc.Row([
 
-            dbc.Col(html.Span(html.I(className='bi bi-cart-fill', style={'fontSize': '2em', 'color': '#E89C31'})), style={'display':'inline-block'}),
+            dbc.Col(html.Span(html.I(className='bi bi-cart-fill', style={'fontSize': '2em', 'color': '#0732EF'})), style={'display':'inline-block'}),
             dbc.Col(html.Span([html.H5('Online Shopping Trends')],className='nav-header-span-class'))
 
         ], class_name='g-2', align='center'),
 
         dbc.Row([
 
-            dbc.Nav([
-
-                dbc.DropdownMenu([
-
-                    dbc.DropdownMenuItem(html.Span([html.I(className='bi bi-house-fill', style={'marginRight': '0.5em', 'fontSize': '1.5em'}),'Home']), href='/Home'),
-                    dbc.DropdownMenuItem(html.Span([html.I(className='bi bi-info-square', style={'marginRight': '0.5em', 'fontSize': '1.5em'}), "Overview"]), href='/Overview'),
-                    dbc.DropdownMenuItem(html.Span([html.I(className='bi bi-easel2', style={'marginRight': '0.5em', 'fontSize': '1.5em'}), "Dashboard"]), href='/Dashboard'),
-
-                ], in_navbar=True, nav=True, label='Page Navigation', color="secondary", menu_variant="dark", align_end=True),
-                dbc.NavItem(dbc.NavLink(f"{named_navbar}", active=True, style={'font-size': 'small'},class_name='nav-header-desc-pill'))
-                
-            ], navbar=True, style={'alignItems': 'center'}, horizontal='end', class_name='navbar-top')
+           dbc.Nav(
+                [
+                    dbc.NavItem(dbc.NavLink("Home", href="/Home")),
+                    # dbc.NavItem(dbc.NavLink("Overview", href="/Overview")),
+                    dbc.NavItem(dbc.NavLink("Dashboard", href="/Dashboard")),
+                ],
+                navbar=True,
+                style={"alignItems": "center"},
+                horizontal="end",
+                class_name="navbar-top",
+            )
 
         ])
 
         
 
-    ], class_name='m-0 mw-100', fluid=False),dark=True, color='dark', class_name=nav_class
+    ], class_name='m-0 mw-100', fluid=False), class_name=nav_class
 )
 
     return navbar

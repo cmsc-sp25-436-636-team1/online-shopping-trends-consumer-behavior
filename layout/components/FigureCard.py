@@ -1,46 +1,34 @@
 import dash
 import dash_bootstrap_components as dbc
 from dash import html, dcc
-
 class FigureCard(dbc.Card):
-    def __init__(self, title, id, figure=None, description=""):
+    def __init__(self, title, id, figure=None, caption=""):
         super().__init__(
             children=[
                 html.Div(
                     [
-                        html.H5(title, className="m-0 align-center"),
-                        dbc.Button(
-                            html.Span(
-                                "help",
-                                className="material-symbols-outlined d-flex",
-                            ),
-                            id={"type": "graph-info-btn", "index": id},
-                            n_clicks=0,
-                            color="light",
+                        html.Div(
+                            [
+                                html.H5(title, className="m-0"),
+                                html.P(caption, className="m-0 text-muted"),
+                            ],
+                            className="d-flex flex-column justify-content-center"
                         ),
                     ],
-                    className="d-flex justify-content-between align-center p-3",
+                    className="d-flex justify-content-between align-items-center p-3",
                 ),
+
+                # Graph area
                 dbc.Spinner(
                     dcc.Graph(
                         id={"type": "graph", "index": id},
-                        responsive=True,
                         figure=figure,
-                        style={"height": "100%"},
+                        style={"height": "100%", "padding-bottom": "1 rem"},
+                        responsive=True,
                     ),
                     size="lg",
                     color="dark",
                     delay_show=750,
-                ),
-                dbc.Modal(
-                    [
-                        dbc.ModalHeader(html.H4(title)),
-                        dbc.ModalBody(dcc.Markdown(description or "", link_target="_blank")),
-                    ],
-                    id={"type": "graph-modal", "index": id},
-                    is_open=False,
-                    centered=True,
-                    size="md",
                 ),
             ],
             className="mb-3 figure-card",

@@ -1,79 +1,245 @@
-from dash import html, dcc, Input, Output, State, callback, no_update, register_page
+# layout.py
+
+from dash import html, register_page
 import dash_bootstrap_components as dbc
 
-# from .Home_Page_Pills import pills_array
+register_page(
+    __name__,
+    path='/Home',
+    title="Online Shopping Trends & Consumer Behavior",
+    description="Dashboard home for Amazon consumer analysis"
+)
 
-register_page(__name__, path='/Home',
-              title="Online Shopping Trends & Consumer Behavior Analysis  - Home",
-              description="Online Shopping Trends & Consumer Behavior.",
-              image="HomePageMetaImage.png")
+def section(children, bg="light"):
+    cls = {
+        "light":  "section section-light",
+        "accent": "section section-accent",
+        "primary":"section section-primary"
+    }[bg]
+    return html.Div(children, className=cls)
+
 
 layout = html.Div([
 
+    # 1) Hero
+    section([
+        dbc.Container([
+            dbc.Row(
+                align="center", justify="center", className="g-4",
+                children=[
+                    # text
+                    dbc.Col(
+                        [
+                            html.Div(
+                                html.H1(
+                                    "Behavioral Analysis of Amazon’s Consumers",
+                                    className="section-title",
+                                    style={"color":"#0732EF"}
+                                ),
+                                **{"data-aos":"fade-right"}
+                            ),
+                            html.Div(
+                                html.P(
+                                    "Understand consumer behavior, identify trends, optimize marketing strategies, "
+                                    "and improve the overall customer experience on Amazon.",
+                                    className="lead text-center",
+                                    style={"color":"#0732EF"}
+                                ),
+                                **{"data-aos":"fade-up", "data-aos-delay":"200"}
+                            ),
+                        ],
+                        width=12, md=6
+                    ),
+                    # image
+                    dbc.Col(
+                        html.Div(
+                            html.Img(src="/assets/illus.png", className="img-fluid"),
+                            **{"data-aos":"zoom-in", "data-aos-delay":"400"}
+                        ),
+                        width=12, md=6
+                    ),
+                ]
+            )
+        ])
+    ], bg="light"),
+
+
+    # 2) Dataset (three buttons under the paragraph)
+    section([
     dbc.Container([
 
-        dbc.Row(className='home-page-row-banner', children=[
+        # Row with image on left, text + buttons on right
+        dbc.Row(
+            align="center", justify="center", className="g-4",
+            children=[
 
-            dbc.Col([
+                # Left: illustration
+                dbc.Col(
+                    html.Div(
+                        html.Img(src="/assets/illus2.png", className="img-fluid"),
+                        **{"data-aos": "fade-right", "data-aos-delay": "200"}
+                    ),
+                    xs=12, md=6
+                ),
 
-                dbc.Row([
-
-                    dbc.Col([
-
+                # Right: title, paragraph, and three secondary buttons
+                dbc.Col(
+                    [
+                        # Title
                         html.Div(
-                            
-                            [html.H1('Welcome!', className='home-banner-title-text'),
-                            html.P('An Analytics Dashboard for E-commerce Trends and Consumer Behaviors', style={'color': 'rgb(199, 199, 200)', 'fontWeight': 100})]
-                            
-                        , style={'display': 'inline-block'}, className='home-page-title-text-box')
+                            html.H2(
+                                "About the Dataset",
+                                className="section-title",
+                                style={"color": "#0732EF"}
+                            ),
+                            **{"data-aos": "fade-up"}
+                        ),
 
-                    ],lg=4, md=6, sm=12, xs=12, width=12, className='d-flex align-items-start justify-content-sm-center justify-content-md-start justify-content-center title-animate'),
+                        # Intro paragraph
+                        html.Div(
+                            html.P(
+                                "Collected via Google Forms, includes demographics, interaction data, and reviews.",
+                                className="lead",
+                                style={"color": "#0732EF"}
+                            ),
+                            **{"data-aos": "fade-up", "data-aos-delay": "200"}
+                        ),
+
+                        # Three buttons beneath the paragraph
+                        html.Div(
+                            dbc.Row(
+                                [
+                                    dbc.Col(
+                                        dbc.Button("Table", color="secondary", className="w-100"),
+                                        xs=12, sm=6, md=4
+                                    ),
+                                    dbc.Col(
+                                        dbc.Button("23 Columns", color="secondary", className="w-100"),
+                                        xs=12, sm=6, md=4
+                                    ),
+                                    dbc.Col(
+                                        dbc.Button("602 Records", color="secondary", className="w-100"),
+                                        xs=12, sm=6, md=4
+                                    ),
+                                ],
+                                className="g-3"
+                            ),
+                            **{"data-aos": "fade-up", "data-aos-delay": "400"}
+                        ),
+                    ],
+                    xs=12, md=6
+                ),
+            ]
+        )
+    ])
+], bg="accent"),
 
 
-                    dbc.Col([
+    # 3) Target & Action Pairs
+    section([
+        dbc.Container([
 
-                        html.Div([
+            html.Div(
+                html.H2(
+                    "Project Motivation",
+                    className="section-title",
+                    style={"color":"#fff"}
+                ),
+                **{"data-aos":"fade-up"}
+            ),
+            html.Div(
+                html.P(
+                    "Target & Action Pairs",
+                    className="text-center",
+                    style={"color":"#fff","fontWeight":"500"}
+                ),
+                **{"data-aos":"fade-up", "data-aos-delay":"200"}
+            ),
 
-                            html.H2('An Analytics App on E-commerce Trends and Consumer Behaviors', id='home-page-header', style={'color': '#E89C31'}),
-                            html.Hr(className='my-2'),
-                            html.Small('''Explore this Web app to find and compare the most common purchase frequency, compare consumer habits between age and gender, and summarize most purchase categories.
-                                   You can also analyze and find correlations between age & gender for purchase frequency and purchase category.
-                                   Observe correlation between browsing frequency & purchase frequency.
-                                   Compare the dependence of customer reviews on purchase frequency. ''', className='mb-3', id='airports-graph-desc',
-                                   style={'color': 'rgb(199, 199, 200)'}),
+            # steps
+            *[
+                html.Div(
+                    dbc.Row(
+                        [
+                            dbc.Col(html.Div(step["num"], className="step-num"), xs=2, sm=1),
+                            dbc.Col(html.Div(step["title"], className="step-title"), xs=4, sm=3),
+                            dbc.Col(html.Div(step["desc"], className="step-desc"), xs=6, sm=8),
+                        ],
+                        className="py-3 process-row"
+                    ),
+                    **{"data-aos":"fade-up", "data-aos-delay":f"{300+i*100}"}
+                )
+                for i, step in enumerate([
+                    {"num":"01","title":"Analyze & Produce","desc":"Distribution of age & gender with # of purchases"},
+                    {"num":"02","title":"Analyze & Produce","desc":"Correlation between browsing & purchase frequency"},
+                    {"num":"03","title":"Query & Compare","desc":"Dependence of customer reviews on purchase frequency"},
+                    {"num":"04","title":"Query & Compare","desc":"Most common purchase frequency; compare habits by age & gender"}
+                ])
+            ]
+
+        ])  # default fluid=False → centered max‑width
+    ], bg="primary"),
 
 
-                    ], className='p-4 rounded-3 home-page-example-animate-box flex-fill', id='home-visual-div')
+    # 4) Dashboard CTA section (center‑aligned)
 
-                    ],lg=6, md=6, sm=12, xs=12, width=8, className='d-flex align-items-start title-animate')
+    section([
+        dbc.Container([
+
+            # Title
+            html.Div(
+                html.H2(
+                    "Dashboard",
+                    className="section-title",
+                    style={"color": "#0732EF"}
+                ),
+                className="text-center",
+                **{"data-aos": "fade-up"}
+            ),
+
+            # Description
+            html.Div(
+                html.P(
+                    "Dive into our interactive dashboard to explore key insights on Amazon consumer behavior— "
+                    "from demographic breakdowns and browsing vs purchase patterns to category trend analyses.",
+                    className="dashboard-desc"
+                ),
+                className="text-center",
+                **{"data-aos": "fade-up", "data-aos-delay": "200"}
+            ),
+
+            # Button
+           
+
+            # Illustration
+            html.Div(
+                html.Img(
+                    src="/assets/illus3.png",
+                    className="img-fluid",
+                    style={"maxWidth": "300px"}
+                ),
+                className="text-center my-2",
+                **{"data-aos": "zoom-in", "data-aos-delay": "600"}
+            ),
+            
+             html.Div(
+                dbc.Button(
+                    "See Our Dashboard",
+                    href="/Dashboard",
+                    className="btn-dashboard",
+                    color="secondary",
+                    style={
+                        "borderColor": "#0732EF",
+                        "backgroundColor": "#faf9f5",
+                        "color": "#0732EF"
+                    }
+                ),
+                className="text-center mb-4",
+                **{"data-aos": "fade-up", "data-aos-delay": "400"}
+            ),
+
+        ])
+    ], bg="light"),
 
 
-                ], style={'height': '100%'}, justify='around')
-
-            ], width=12, className='home-banner-main-column')
-
-        ]),
-
-        dbc.Row([
-
-            dbc.Col([
-
-                html.A(html.Span([html.I(className='bi bi-info-square home-page-info-img')], className='mb-3'), href='/Overview'),
-                html.H5('Overview'),
-                html.Small('Explore the dataset and individual highlight features of the dataset!')
-
-            ], width=12, xs=12, sm=6, md=3, lg=2, xl=2, xxl=2, className='home-page-info-col mt-3'),
-
-            dbc.Col([
-
-                html.A(html.Span([html.I(className='bi bi-easel2 home-page-info-img')], className='mb-3'), href='/Dashboard'),
-                html.H5('Dashboard'),
-                html.Small('Find trend by looking at all the dataset feature all at once!')
-
-            ], width=12, xs=12, sm=6, md=3, lg=2, xl=2, xxl=2, className='home-page-info-col mt-3'),
-
-        ], justify='evenly', className='my-4')
-
-    ], fluid=True)
-
-], style={'margin': 0})
+])
