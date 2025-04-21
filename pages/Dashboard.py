@@ -89,7 +89,7 @@ gender_summary_df['AvgAge'] = gender_summary_df['AvgAge'].round().astype(int)
 layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor": "#faf9f5"}, children=[
 
     # ——— Tabs ———
-    dbc.Tabs(id="dashboard-tabs", active_tab="tab-demographics", className="mb-3", children=[
+    dbc.Tabs(id="dashboard-tabs", active_tab="tab-consumer-overview", className="mb-3", children=[
 
         dbc.Tab(
             label="Consumer Category Overview",
@@ -184,7 +184,7 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
         ),
         
   
-    dbc.Tab(
+        dbc.Tab(
         label="Reviews and Frequency",
         tab_id="tab-reviews",
         children=[
@@ -435,6 +435,10 @@ def update_consumer_overview_tab(active_tab):
         overall_summary,
         x='Pct of Purchases', y='purchase_categories',
         orientation='h',
+        labels = {
+            'purchase_categories': 'Purchase Categories',
+            'Pct of Purchases':    '% of Total Purchases'
+        }
     )
     fig_overview.update_traces(
         customdata=overall_summary[['RawCount', 'Pct of Purchases', 'AvgAge']].values,
@@ -452,6 +456,10 @@ def update_consumer_overview_tab(active_tab):
         x='Pct of Purchases', y='purchase_categories',
         color='gender', facet_col='gender',
         orientation='h',
+        labels = {
+            'purchase_categories': 'Purchase Categories',
+            'Pct of Purchases':    '% of Total Purchases'
+        }
     )
     for trace in fig_compare.data:
         gender = trace.name
@@ -471,6 +479,10 @@ def update_consumer_overview_tab(active_tab):
         x='Pct of Purchases', y='purchase_categories',
         color='gender', barmode='group',
         orientation='h',
+        labels = {
+            'purchase_categories': 'Purchase Categories',
+            'Pct of Purchases':    '% of Total Purchases'
+        }
     )
     for trace in fig_shares.data:
         gender = trace.name
