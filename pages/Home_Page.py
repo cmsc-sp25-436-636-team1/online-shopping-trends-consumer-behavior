@@ -67,13 +67,9 @@ layout = html.Div([
     # 2) Dataset (three buttons under the paragraph)
     section([
     dbc.Container([
-
-        # Row with image on left, text + buttons on right
         dbc.Row(
             align="center", justify="center", className="g-4",
             children=[
-
-                # Left: illustration
                 dbc.Col(
                     html.Div(
                         html.Img(src="/assets/illus2.png", className="img-fluid"),
@@ -82,7 +78,6 @@ layout = html.Div([
                     xs=12, md=6
                 ),
 
-                # Right: title, paragraph, and three secondary buttons
                 dbc.Col(
                     [
                         # Title
@@ -95,7 +90,6 @@ layout = html.Div([
                             **{"data-aos": "fade-up"}
                         ),
 
-                        # Intro paragraph
                         html.Div(
                             html.P(
                                 "Collected via Google Forms, includes demographics, interaction data, and reviews.",
@@ -105,7 +99,6 @@ layout = html.Div([
                             **{"data-aos": "fade-up", "data-aos-delay": "200"}
                         ),
 
-                        # Three buttons beneath the paragraph
                         html.Div(
                             dbc.Row(
                                 [
@@ -177,12 +170,11 @@ layout = html.Div([
                 ])
             ]
 
-        ])  # default fluid=False → centered max‑width
+        ]) 
     ], bg="primary"),
 
 
     # 4) Dashboard CTA section (center‑aligned)
-
     section([
         dbc.Container([
 
@@ -207,9 +199,6 @@ layout = html.Div([
                 className="text-center",
                 **{"data-aos": "fade-up", "data-aos-delay": "200"}
             ),
-
-            # Button
-           
 
             # Illustration
             html.Div(
