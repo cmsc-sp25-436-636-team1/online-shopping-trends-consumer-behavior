@@ -163,10 +163,10 @@ layout = html.Div([
                     **{"data-aos":"fade-up", "data-aos-delay":f"{300+i*100}"}
                 )
                 for i, step in enumerate([
-                    {"num":"01","title":"Analyze & Produce","desc":"Distribution of age & gender with # of purchases"},
-                    {"num":"02","title":"Analyze & Produce","desc":"Correlation between browsing & purchase frequency"},
-                    {"num":"03","title":"Query & Compare","desc":"Dependence of customer reviews on purchase frequency"},
-                    {"num":"04","title":"Query & Compare","desc":"Most common purchase frequency; compare habits by age & gender"}
+                    {"num":"01","title":"Compare & Trends","desc":"The most common purchase frequency, compare consumer habits between age and gender, and summarize most purchase categories"},
+                    {"num":"02","title":"Analyze & correlations","desc":"Between age & gender for purchase frequency and purchase category."},
+                    {"num":"03","title":"Analyze & correlations","desc":"Dependence of customer reviews on purchase frequency"},
+                    {"num":"04","title":"Compare & Dependency","desc":"Customer reviews on purchase frequency"}
                 ])
             ]
 
