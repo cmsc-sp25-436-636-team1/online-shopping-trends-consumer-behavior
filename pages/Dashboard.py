@@ -38,63 +38,72 @@ df['age_bin'] = pd.cut(df['age'], bins=bins, labels=bin_labels, right=False)
 category_order = ["Child", "Teenager", "Young Adult", "Adult", "Middle-aged Adult", "Older Adult"]
 df["age_category"] = pd.Categorical(df["age_category"], categories=category_order, ordered=True)
 
+gender_color = {
+    "Female" : "#E976AA",
+    "Male": "#1D76B5",
+    "Other": "#dde663",
+    "Prefer not to say": "#4F4F4F" 
+}
 
-df.columns = df.columns.str.strip()
-df['age'] = pd.to_numeric(df['age'], errors='coerce')
-df['gender'] = df['gender'].astype(str)
+product_category_options = [{"label": c, "value": c} for c in sorted(df["purchase_categories"].unique())]
 
-# Explode multi-valued purchase category column
-df = df.assign(
-    purchase_categories=df['purchase_categories'].astype(str).str.split(';')
-).explode('purchase_categories')
-df['purchase_categories'] = df['purchase_categories'].str.strip()
 
-# --- OVERALL CATEGORY SUMMARY ---
-overall_summary = (
-    df.groupby('purchase_categories')
-    .agg(RawCount=('purchase_categories','size'),
-        AvgAge=('age','mean'))
-    .reset_index()
-)
-overall_summary['Pct of Purchases'] = (
-    overall_summary['RawCount'] / overall_summary['RawCount'].sum() * 100
-)
-overall_summary['AvgAge'] = overall_summary['AvgAge'].round().astype(int)
 
-# --- CATEGORY SHARES BY gender ---
-summary_df = (
-    df.groupby(['gender','purchase_categories'])
-    .agg(RawCount=('purchase_categories','size'),
-        AvgAge=('age','mean'))
-    .reset_index()
-)
-summary_df['Pct of Purchases'] = (
-    summary_df['RawCount'] /
-    summary_df.groupby('gender')['RawCount'].transform('sum') * 100
-)
-summary_df['AvgAge'] = summary_df['AvgAge'].round().astype(int)
-
-# --- gender SUMMARY PIE DATA ---
-gender_summary_df = (
-    df.groupby('gender')
-    .agg(RawCount=('purchase_categories','size'),
-        AvgAge=('age','mean'))
-    .reset_index()
-)
-gender_summary_df['Pct of Purchases'] = (
-    gender_summary_df['RawCount'] / gender_summary_df['RawCount'].sum() * 100
-)
-gender_summary_df['AvgAge'] = gender_summary_df['AvgAge'].round().astype(int)
-    
 layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor": "#faf9f5"}, children=[
 
     # ——— Tabs ———
-    dbc.Tabs(id="dashboard-tabs", active_tab="tab-consumer-overview", className="mb-3", children=[
+    dbc.Tabs(id="dashboard-tabs", active_tab="tab-consumer-overview", className="mb-1 text-small", children=[
 
         dbc.Tab(
             label="Consumer Category Overview",
             tab_id="tab-consumer-overview",
             children=[
+                dbc.Row([
+                    dbc.Col([
+                        html.Label("Display Mode"),
+                        dbc.RadioItems(
+                            id="overview-display-mode",
+                            options=[
+                                {"label": "% Total Purchases", "value": "percent"},
+                                {"label": "Raw Count", "value": "count"},
+                            ],
+                            value="percent",
+                            inline=True,
+                        )
+                    ], width="3"),
+                    # Gender Filter
+                    dbc.Col([
+                        html.Label("Filter by Gender"),
+                        dcc.Dropdown(
+                            id="gender-filter-overview",
+                            options=[{"label": g, "value": g} for g in df["gender"].unique()],
+                            value=["Male", "Female", "Others"], 
+                            multi=True,
+                        ),
+                    ], width=3),
+
+                    # Age Category Filter
+                    dbc.Col([
+                        html.Label("Filter by Age Category"),
+                        dcc.Dropdown(
+                            id="age-cat-filter-overview",
+                            options=[{"label": a, "value": a} for a in df["age_category"].cat.categories],
+                            multi=True,
+                        ),
+                    ], width=3),
+
+                    # Product Category Filter
+                    dbc.Col([
+                        html.Label("Filter by Product Category"),
+                        dcc.Dropdown(
+                            id="product-cat-filter-overview",
+                            options=product_category_options,
+                            multi=True,
+                        ),
+                    ], width=3),
+                ], className="my-1", style={"font-size": "smaller"}, justify='center', align='center'),
+
+
                 dbc.Row([
                     dbc.Col(FigureCard("Purchase Category Distribution",
                                        caption="Shows the overall purchase category share. It is computed by the count of events in each category divided by all purchases in the survey", 
@@ -240,12 +249,6 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
         ]
     )
 
-        
-        
-
-
-        
-        
     ]),
 ])
 
@@ -423,92 +426,121 @@ def update_correlation_heatmap(active_tab, genders, age_cats):
     Output({"type": "graph", "index": "fig-compare"}, "figure"),
     Output({"type": "graph", "index": "fig-shares"}, "figure"),
     Output({"type": "graph", "index": "fig-summary"}, "figure"),
+    Input("gender-filter-overview", "value"),
+    Input("age-cat-filter-overview", "value"),
+    Input("product-cat-filter-overview", "value"),
+    Input("overview-display-mode", "value"),  # new toggle input
     Input("dashboard-tabs", "active_tab"),
 )
-def update_consumer_overview_tab(active_tab):
+def update_consumer_overview_tab(gender_values, age_values, product_values, display_mode, active_tab):
     if active_tab != "tab-consumer-overview":
         raise PreventUpdate
 
+    dff = df.copy()
+    if gender_values:
+        dff = dff[dff["gender"].isin(gender_values)]
+    if age_values:
+        dff = dff[dff["age_category"].isin(age_values)]
+    if product_values:
+        dff = dff[dff["purchase_categories"].isin(product_values)]
 
-    # --- Overview Figure ---
+    # Aggregates
+    overall_summary = (
+        dff.groupby("purchase_categories")
+        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
+        .reset_index()
+    )
+    overall_summary['Pct of Purchases'] = (
+        overall_summary['RawCount'] / overall_summary['RawCount'].sum() * 100
+    )
+    overall_summary['AvgAge'] = overall_summary['AvgAge'].round().astype('Int64')
+
+    summary_df = (
+        dff.groupby(['gender', 'purchase_categories'])
+        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
+        .reset_index()
+    )
+    summary_df['Pct of Purchases'] = (
+        summary_df['RawCount'] / summary_df.groupby('gender')['RawCount'].transform('sum') * 100
+    )
+    summary_df['AvgAge'] = summary_df['AvgAge'].round().astype('Int64')
+
+    gender_summary_df = (
+        dff.groupby("gender")
+        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
+        .reset_index()
+    )
+    gender_summary_df['Pct of Purchases'] = (
+        gender_summary_df['RawCount'] / gender_summary_df['RawCount'].sum() * 100
+    )
+    gender_summary_df['AvgAge'] = gender_summary_df['AvgAge'].round().astype('Int64')
+
+    # Determine mode
+    metric_col = "Pct of Purchases" if display_mode == "percent" else "RawCount"
+    metric_label = "% of Total Purchases" if display_mode == "percent" else "Raw Count"
+    x_tickformat = ".1f%" if display_mode == "percent" else None
+
+    # --- Overview Chart
     fig_overview = px.bar(
         overall_summary,
-        x='Pct of Purchases', y='purchase_categories',
-        orientation='h',
-        labels = {
-            'purchase_categories': 'Purchase Categories',
-            'Pct of Purchases':    '% of Total Purchases'
-        }
+        x=metric_col, y='purchase_categories', orientation='h',
+        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
     )
+    fig_overview.update_layout(xaxis_tickformat=x_tickformat)
     fig_overview.update_traces(
         customdata=overall_summary[['RawCount', 'Pct of Purchases', 'AvgAge']].values,
-        hovertemplate=(
-            "<b>%{y}</b><br>"
-            "Count: %{customdata[0]}<br>"
-            "Share: %{customdata[1]:.1f}%<br>"
-            "Avg Age: %{customdata[2]}<extra></extra>"
-        )
+        hovertemplate="<b>%{y}</b><br>Count: %{customdata[0]}<br>Share: %{customdata[1]:.1f}%<br>Avg Age: %{customdata[2]}<extra></extra>"
     )
 
-    # --- Compare genders (Facet) ---
+    # --- Compare Chart (facets)
     fig_compare = px.bar(
         summary_df,
-        x='Pct of Purchases', y='purchase_categories',
-        color='gender', facet_col='gender',
-        orientation='h',
-        labels = {
-            'purchase_categories': 'Purchase Categories',
-            'Pct of Purchases':    '% of Total Purchases'
-        }
+        x=metric_col, y='purchase_categories', color='gender', facet_col='gender',
+        color_discrete_map=gender_color, orientation='h',
+        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
     )
+    fig_compare.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+    fig_compare.update_layout(legend_title_text="Gender", xaxis_tickformat=x_tickformat)
     for trace in fig_compare.data:
         gender = trace.name
         sub = summary_df[summary_df['gender'] == gender]
         trace.customdata = sub[['RawCount', 'Pct of Purchases', 'AvgAge']].values
         trace.hovertemplate = (
-            "<b>%{y}</b><br>"
-            f"gender: {gender}<br>"
-            "Count: %{customdata[0]}<br>"
-            "Share: %{customdata[1]:.1f}%<br>"
-            "Avg Age: %{customdata[2]}<extra></extra>"
+            f"<b>%{{y}}</b><br>Gender: {gender}<br>Count: %{{customdata[0]}}<br>Share: %{{customdata[1]:.1f}}%<br>Avg Age: %{{customdata[2]}}<extra></extra>"
         )
 
-    # --- Shares by gender (Grouped) ---
+    # --- Grouped Bar
     fig_shares = px.bar(
         summary_df,
-        x='Pct of Purchases', y='purchase_categories',
-        color='gender', barmode='group',
-        orientation='h',
-        labels = {
-            'purchase_categories': 'Purchase Categories',
-            'Pct of Purchases':    '% of Total Purchases'
-        }
+        x=metric_col, y='purchase_categories', color='gender', barmode='group',
+        color_discrete_map=gender_color, orientation='h',
+        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
     )
+
+    fig_shares.update_layout(legend_title_text="Gender", xaxis_tickformat=x_tickformat)
     for trace in fig_shares.data:
         gender = trace.name
         sub = summary_df[summary_df['gender'] == gender]
         trace.customdata = sub[['RawCount', 'Pct of Purchases', 'AvgAge']].values
         trace.hovertemplate = (
-            "<b>Category:</b> %{y}<br>"
-            f"gender: {gender}<br>"
-            "Count: %{customdata[0]}<br>"
-            "Share: %{customdata[1]:.1f}%<br>"
-            "Avg Age: %{customdata[2]}<extra></extra>"
+            f"<b>Category:</b> %{{y}}<br>Gender: {gender}<br>Count: %{{customdata[0]}}<br>Share: %{{customdata[1]:.1f}}%<br>Avg Age: %{{customdata[2]}}<extra></extra>"
         )
 
-    # --- Summary Pie ---
+    # --- Pie Chart (always shows percent)
     fig_summary = px.pie(
         gender_summary_df,
-        values='Pct of Purchases',
-        names='gender',
+        values='Pct of Purchases', names='gender', color='gender',
+        color_discrete_map=gender_color, hole=0.4
     )
     fig_summary.update_traces(
-        textinfo='percent+label',
-        textfont_size=18,
+        textinfo='percent+label', textfont_size=18,
         hoverinfo='label+percent+value'
     )
+    fig_summary.update_layout(legend_title_text="Gender")
 
     return fig_overview, fig_compare, fig_shares, fig_summary
+
+
 
 @callback(
     Output({"type": "graph", "index": "imp-by-freq"},   "figure"),

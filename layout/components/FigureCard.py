@@ -9,8 +9,8 @@ class FigureCard(dbc.Card):
                     [
                         html.Div(
                             [
-                                html.H5(title, className="m-0"),
-                                html.P(caption, className="m-0 text-muted"),
+                                html.P(title, className="m-0 font-size-bold"),
+                                html.P(caption, className="m-0 text-muted", style={"font-size": "small"} ),
                             ],
                             className="d-flex flex-column justify-content-center"
                         ),
@@ -23,7 +23,7 @@ class FigureCard(dbc.Card):
                     dcc.Graph(
                         id={"type": "graph", "index": id},
                         figure=figure,
-                        style={"height": "100%", "padding-bottom": "1 rem"},
+                        style={"height": "30vh", "padding-bottom": "1 rem"},
                         responsive=True,
                     ),
                     size="lg",

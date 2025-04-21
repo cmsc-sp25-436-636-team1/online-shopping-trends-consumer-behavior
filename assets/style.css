@@ -25,17 +25,22 @@ html {
     align-items: center;
 }
 
-.dashboard-row {
+/* .dashboard-row {
     height: 536px;
-}
+} */
 
 .figure-card {
-    height: 520px;
+    height: 40vh;
     border: 1px solid #dee2e6;
     /* or whatever your theme uses */
     border-radius: 0.25rem;
     overflow: hidden;
 }
+
+#dashboard-tabs {
+    font-size: smaller;
+}
+
 
 #attribution {
     text-align: right;
@@ -563,6 +568,15 @@ html {
     align-items: center;
     margin: 0 auto;
 
+}
+
+.nav-bar {
+    padding-bottom: 0 !important;
+}
+
+.nav-tabs .nav-link {
+    padding-top: 0.2rem !important;
+    padding-bottom: 0.2rem !important;
 }
 
 .navbar-nav .dropdown-menu {
