@@ -55,6 +55,7 @@ def pathnameCallback(path):
     pathname_pill_pair = {'/Home': 'Home', 
                           '/Dashboard' : 'Dashboard', 
                           "/": 'Home',
+                          "/Submit": 'Submit',
                           }
 
     return_children = [

@@ -7,7 +7,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
-from layout.components.FigureCard import FigureCard
+from layout.components.FigureCard import FigureCard, BigFigureCard
 from dash.exceptions import PreventUpdate
 
 load_dotenv()
@@ -46,8 +46,6 @@ gender_color = {
 }
 
 product_category_options = [{"label": c, "value": c} for c in sorted(df["purchase_categories"].unique())]
-
-
 
 layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor": "#faf9f5"}, children=[
 
@@ -124,6 +122,53 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
             ]
         ),
         
+        dbc.Tab(
+            label="Top Purchase Category",
+            tab_id="tab-bubble-view",
+            children=[
+                dbc.Row([
+                    dbc.Col([
+                        html.Label("View Mode"),
+                        dbc.RadioItems(
+                            id="bubble-view-toggle",
+                            options=[
+                                {"label": "Combined View", "value": "combined"},
+                                {"label": "Faceted View", "value": "facet"}
+                            ],
+                            value="combined",
+                            inline=True,
+                        ),
+                    ], width=2),
+                    dbc.Col([
+                        html.Label("Filter by Gender"),
+                        dcc.Dropdown(id="bubble-gender-filter", multi=True, options=[{"label": g, "value": g} for g in df["gender"].unique()],
+                            value=["Male", "Female", "Others"], ),
+                    ], width=3),
+
+                    dbc.Col([
+                        html.Label("Filter by Age Category"),
+                        dcc.Dropdown(id="bubble-age-filter", multi=True),
+                    ], width=3),
+
+                    dbc.Col([
+                        html.Label("Filter by Product Category"),
+                        dcc.Dropdown(id="bubble-product-filter", multi=True),
+                    ], width=4),
+
+                    
+                ], className="my-1", style={"font-size": "smaller"}, justify='center', align='center'),
+
+                dbc.Row([
+                    dbc.Col(BigFigureCard(
+                        title="Purchase Category Bubble Chart",
+                        caption="Bubble size shows frequency; color = gender; axis = age group vs frequency",
+                        id="bubble-purchase-view",
+                    ), width=12),
+                ]),
+            ]
+        ),
+
+
         dbc.Tab(label="Demographics", tab_id="tab-demographics", children=[
 
             # Row 1: Age Category bar + Stacked Age/Gender bar
@@ -150,8 +195,7 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
                     id="freq-gender-bar"), width=6),
             ], className="gy-3"),
         ]),
-
-              
+           
         dbc.Tab(
             label="Browse Vs Purchase",
             tab_id="tab-corr",
@@ -192,7 +236,6 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
             ],
         ),
         
-  
         dbc.Tab(
         label="Reviews and Frequency",
         tab_id="tab-reviews",
@@ -249,6 +292,7 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
         ]
     )
 
+        
     ]),
 ])
 
@@ -376,8 +420,7 @@ def update_demographics_tab(active_tab):
         fig_age_box,
         fig_freq_gender_bar,
     )
-
-    
+   
     
 @callback(
     Output({"type": "graph", "index": "heatmap-behavior"}, "figure"),
@@ -541,132 +584,112 @@ def update_consumer_overview_tab(gender_values, age_values, product_values, disp
     return fig_overview, fig_compare, fig_shares, fig_summary
 
 
-
 @callback(
-    Output({"type": "graph", "index": "imp-by-freq"},   "figure"),
-    Output({"type": "graph", "index": "rel-by-freq"},   "figure"),
-    Output({"type": "graph", "index": "imp-trend"},     "figure"),
-    Output({"type": "graph", "index": "imp-vs-rel"},    "figure"),
-    Input("dashboard-tabs",       "active_tab"),
-    Input("gender-filter-rev",    "value"),
-    Input("age-cat-filter-rev",   "value"),
+    Output({"type": "graph", "index": "bubble-purchase-view"}, "figure"),
+    Output({"type": "fig-title", "index": "bubble-purchase-view"}, "children"),
+    Output({"type": "fig-caption", "index": "bubble-purchase-view"}, "children"),
+    Output("bubble-gender-filter", "options"),
+    Output("bubble-age-filter", "options"),
+    Output("bubble-product-filter", "options"),
+    Input("bubble-gender-filter", "value"),
+    Input("bubble-age-filter", "value"),
+    Input("bubble-product-filter", "value"),
+    Input("bubble-view-toggle", "value"),
+    Input("dashboard-tabs", "active_tab"),
 )
-def update_reviews_tab(active_tab, genders, age_cats):
-    if active_tab != "tab-reviews":
+def update_bubble_chart(genders, ages, products, view_mode, active_tab):
+    if active_tab != "tab-bubble-view":
         raise PreventUpdate
 
-    df_rev = df.drop_duplicates("id")[[
-        "id","gender","age_category","purchase_frequency",
-        "customer_reviews_importance","review_reliability"
-    ]].copy()
+    df_copy = df.copy()
+    df_copy["purch_cat_list"] = df_copy["purchase_categories"].astype(str).str.split(";")
+    df_sep_cat = df_copy.explode("purch_cat_list")
+    df_sep_cat["purch_cat_list"] = df_sep_cat["purch_cat_list"].str.strip()
 
-    df_rev["customer_reviews_importance"] = pd.to_numeric(
-        df_rev["customer_reviews_importance"], errors="coerce"
-    )
+    gender_options = [{"label": g, "value": g} for g in sorted(df_sep_cat["gender"].dropna().unique())]
+    age_order = list(df["age_category"].cat.categories)
+    age_options = [{"label": a, "value": a} for a in age_order if a in df_sep_cat["age_category"].unique()]
+    product_options = [{"label": p, "value": p} for p in sorted(df_sep_cat["purch_cat_list"].dropna().unique())]
 
     if genders:
-        df_rev = df_rev[df_rev["gender"].isin(genders)]
-    if age_cats:
-        df_rev = df_rev[df_rev["age_category"].isin(age_cats)]
+        df_sep_cat = df_sep_cat[df_sep_cat["gender"].isin(genders)]
+    if ages:
+        df_sep_cat = df_sep_cat[df_sep_cat["age_category"].isin(ages)]
+    if products:
+        df_sep_cat = df_sep_cat[df_sep_cat["purch_cat_list"].isin(products)]
 
-    freq_order = [
-      "Multiple times a week","Once a week",
-      "Few times a month","Once a month",
-      "Less than once a month",
-    ]
-    df_rev["purchase_frequency"] = pd.Categorical(
-        df_rev["purchase_frequency"],
-        categories=freq_order,
-        ordered=True
+    x_axis = ["Less than once a month", "Once a month", "Few times a month", "Once a week", "Multiple times a week"]
+
+    df_with_counts = (
+        df_sep_cat.groupby(["age_category", "purchase_frequency", "gender", "purch_cat_list"], observed=True)
+        .size().reset_index(name="count")
     )
 
-    # 1) Importance by Frequency (Box Plot)
-    fig1 = px.box(
-        df_rev, x="purchase_frequency",
-        y="customer_reviews_importance",
-        template="plotly_white", height=240
-    )
-    fig1.update_layout(
-        title="Review Importance by Purchase Frequency",
-        xaxis_title="Purchase Frequency",
-        yaxis_title="Review Importance",
-        margin=dict(l=40, r=20, t=40, b=120),
-    )
-    fig1.update_traces(
-        hovertemplate="<b>%{x}</b><br>Importance: %{y:.2f}<extra></extra>"
+    df_with_counts["purchase_frequency"] = pd.Categorical(df_with_counts["purchase_frequency"], categories=x_axis, ordered=True)
+    df_with_counts["age_category"] = pd.Categorical(df_with_counts["age_category"], categories=age_order, ordered=True)
+
+    df_with_counts["xspacing"] = df_with_counts["purchase_frequency"].cat.codes + np.random.uniform(-0.1, 0.1, len(df_with_counts))
+    df_with_counts["yspacing"] = df_with_counts["age_category"].cat.codes + np.random.uniform(-0.3, 0.3, len(df_with_counts))
+
+    df_with_counts["hover_text"] = df_with_counts.apply(
+        lambda row: f'{row["count"]} {row["gender"]}s in {row["age_category"]} group<br>'
+                    f'buy {row["purch_cat_list"]} {row["purchase_frequency"]}', axis=1
     )
 
-    # 2) Reliability by Frequency (Count Heatmap)
-    rel_ct = pd.crosstab(
-        df_rev["purchase_frequency"],
-        df_rev["review_reliability"]
+    common_args = dict(
+        x="xspacing",
+        y="yspacing",
+        size="count",
+        size_max=40,
+        color="gender",
+        color_discrete_map=gender_color,
+        hover_name="hover_text",
+        hover_data={"count": False, "purch_cat_list": False, "gender": False, "xspacing": False, "yspacing": False},
+        height=600,
     )
-    fig2 = px.imshow(
-        rel_ct, text_auto=True, aspect="auto",
-        template="plotly_white",
-        color_continuous_scale="Viridis",
-        height=240,
-    )
-    fig2.update_layout(
-        title="Review Reliability Distribution by Purchase Frequency",
-        xaxis_title="Review Reliability",
-        yaxis_title="Purchase Frequency",
-        margin=dict(l=40, r=20, t=40, b=120),
-    )
-    fig2.update_traces(
-        hovertemplate=(
-            "<b>Frequency</b>: %{y}<br>"
-            "<b>Reliability</b>: %{x}<br>"
-            "<b>Count</b>: %{z}<extra></extra>"
+
+    if view_mode == "facet":
+        fig = px.scatter(df_with_counts, facet_col="purch_cat_list", facet_col_spacing=0.08,
+                         facet_row_spacing=0.1, facet_col_wrap=3, **common_args)
+        fig.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
+        fig.for_each_xaxis(
+            lambda x: x.update(
+                tickmode="array",
+                tickvals=list(range(len(x_axis))),
+                ticktext=x_axis,
+                tickfont=dict(size=8),
+                title=dict(text="Purchase Frequency", font=dict(size=10)),
+                showticklabels=True,
+                matches=None
+            )
         )
-    )
 
-    # 3) Importance Distribution by Frequency (Bar Chart)
-    imp_dist = (
-        df_rev.groupby("purchase_frequency")["customer_reviews_importance"]
-              .mean()
-              .reset_index(name="avg_importance")
-    )
-    fig3 = px.bar(
-        imp_dist,
-        x="purchase_frequency",
-        y="avg_importance",
-        template="plotly_white",
-        height=240,
-    )
-    fig3.update_layout(
-        title="Average Review Importance by Purchase Frequency",
-        xaxis_title="Purchase Frequency",
-        yaxis_title="Average Importance",
-        margin=dict(l=40, r=20, t=40, b=120),
-    )
-    fig3.update_traces(
-        hovertemplate="<b>%{x}</b><br>Avg Importance: %{y:.2f}<extra></extra>"
-    )
-
-    # 4) Importance vs Reliability (Swarm-style Dot Scatter)
-    fig4 = px.strip(
-        df_rev,
-        x="customer_reviews_importance",
-        y="review_reliability",
-        color="purchase_frequency",
-        template="plotly_white",
-        height=240,
-    )
-    fig4.update_layout(
-        title="Importance vs Reliability Ratings by Purchase Frequency",
-        xaxis_title="Review Importance",
-        yaxis_title="Review Reliability",
-        legend_title="Frequency",
-        margin=dict(l=40, r=20, t=40, b=120),
-    )
-    fig4.update_traces(
-        hovertemplate=(
-            "<b>Importance</b>: %{x}<br>"
-            "<b>Reliability</b>: %{y}<br>"
-            "<b>Frequency</b>: %{legendgroup}<extra></extra>"
+        fig.for_each_yaxis(
+            lambda y: y.update(
+                tickmode='array',
+                tickvals=list(range(len(age_order))),
+                ticktext=age_order,
+                tickfont=dict(size=8),
+                title=dict(text='Age Category', font=dict(size=10)),
+                showticklabels=True,
+                matches=None
+            )
         )
+        title = "Faceted View of Top Purchase Categories"
+        caption = "A faceted view of purchase categories to compare trends of purchase frequency and age group against gender with the area of the bubble related to the number of matches for those three variables."
+
+    else:
+        fig = px.scatter(df_with_counts, **common_args)
+        fig.update_layout(
+            xaxis=dict(tickmode="array", tickvals=list(range(len(x_axis))), ticktext=x_axis, title="Purchase Frequency"),
+            yaxis=dict(tickmode="array", tickvals=list(range(len(age_order))), ticktext=age_order, title="Age Category")
+        )
+        title = "Combined View of Top Purchase Categories"
+        caption = "A single view to compare trends of purchase frequency and age group against gender and purchase category with the area of the bubble related to the number of matches for those four variables."
+
+    fig.update_layout(
+        legend_title_text="Gender",
+        margin=dict(l=40, r=20, t=40, b=60),
     )
 
-
-    return fig1, fig2, fig3, fig4
+    return fig, title, caption, gender_options, age_options, product_options
