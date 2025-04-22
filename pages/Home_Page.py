@@ -1,7 +1,16 @@
 # layout.py
-
 from dash import html, register_page
 import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output, callback
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 register_page(
     __name__,
@@ -111,7 +120,7 @@ layout = html.Div([
                                         xs=12, sm=6, md=4
                                     ),
                                     dbc.Col(
-                                        dbc.Button("602 Records", color="secondary", className="w-100"),
+                                        dbc.Button(id="record-count-button", color="secondary", className="w-100"),
                                         xs=12, sm=6, md=4
                                     ),
                                 ],
@@ -232,3 +241,16 @@ layout = html.Div([
 
 
 ])
+
+@callback(
+    Output("record-count-button", "children"),
+    Input("record-count-button", "id")  # triggers once on page load
+)
+def update_record_count(_):
+    try:
+        with SessionLocal() as session:
+            count = session.execute(text("SELECT COUNT(*) FROM amz_customer_behavior")).scalar()
+        return f"{count} Records"
+    except Exception as e:
+        return "Error fetching count"
+
