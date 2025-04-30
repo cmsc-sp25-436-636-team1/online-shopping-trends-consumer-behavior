@@ -41,7 +41,7 @@ df["age_category"] = pd.Categorical(df["age_category"], categories=category_orde
 gender_color = {
     "Female" : "#E976AA",
     "Male": "#1D76B5",
-    "Other": "#dde663",
+    "Others": "#dde663",
     "Prefer not to say": "#4F4F4F" 
 }
 

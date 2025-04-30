@@ -38,6 +38,7 @@ def navbar_named(page_name):
                     dbc.NavItem(dbc.NavLink("Home", href="/Home")),
                     dbc.NavItem(dbc.NavLink("Dashboard", href="/Dashboard")),
                     dbc.NavItem(dbc.NavLink("Submit", href="/Submit")),
+                    dbc.NavItem(dbc.NavLink("Network", href="/Network")),
                 ],
                 navbar=True,
                 style={"alignItems": "center"},

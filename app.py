@@ -56,6 +56,7 @@ def pathnameCallback(path):
                           '/Dashboard' : 'Dashboard', 
                           "/": 'Home',
                           "/Submit": 'Submit',
+                          "/Network": 'Network',
                           }
 
     return_children = [

@@ -32,10 +32,6 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 with SessionLocal() as session:
     df = pd.read_sql("SELECT * FROM amz_customer_behavior", con=session.bind)
 
-
-print(df.columns.tolist())
-
-
 gender_options = df['gender'].dropna().unique().tolist()
 purchase_freq_options = df['purchase_frequency'].dropna().unique().tolist()
 browsing_freq_options = df['browsing_frequency'].dropna().unique().tolist()
@@ -305,7 +301,6 @@ def submit_survey(n_clicks, age, gender, purchase_frequency, product_categories,
         "improvement_areas": improvement_areas,
     }
 
-    print(values)
     try:
         with SessionLocal() as session:
             session.execute(text(insert_sql), values)

@@ -21,5 +21,3 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 with SessionLocal() as session:
     df = pd.read_sql("SELECT * FROM amz_customer_behavior", con=session.bind)
 
-print(df.info())
-    
