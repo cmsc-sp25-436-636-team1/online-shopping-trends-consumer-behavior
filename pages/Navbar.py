@@ -17,7 +17,7 @@ def navbar_named(page_name):
 
     else: 
 
-        nav_class = 'w-95vw'
+        nav_class = 'w-95vw h-5vh'
 
     named_navbar = page_name
 

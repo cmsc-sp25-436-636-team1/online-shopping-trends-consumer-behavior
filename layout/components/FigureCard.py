@@ -6,25 +6,32 @@ class FigureCard(dbc.Card):
     def __init__(self, title, id, figure=None, caption=""):
         super().__init__(
             children=[
+                # Header area with dynamic title & caption placeholders
                 html.Div(
                     [
-                        html.Div(
-                            [
-                                html.P(title, className="m-0 font-size-bold"),
-                                html.P(caption, className="m-0 text-muted", style={"font-size": "small"} ),
-                            ],
-                            className="d-flex flex-column justify-content-center"
+                        # Title <h5> with pattern‐matching id
+                        html.P(
+                            title,
+                            id={"type": "fig-title", "index": id},
+                            className="m-0 font-size-bold"
+                        ),
+                        # Caption <p> with pattern‐matching id
+                        html.P(
+                            caption,
+                            id={"type": "fig-caption", "index": id},
+                            className="m-0 text-muted",
+                            style={"font-size": "small"}
                         ),
                     ],
-                    className="d-flex justify-content-between align-items-center p-3",
+                    className="d-flex flex-column justify-content-center p-3",
                 ),
 
-                # Graph area
+                # Graph area (unchanged)
                 dbc.Spinner(
                     dcc.Graph(
                         id={"type": "graph", "index": id},
                         figure=figure,
-                        style={"height": "30vh", "padding-bottom": "1 rem"},
+                        style={"height": "30vh", "padding-bottom": "1rem"},
                         responsive=True,
                     ),
                     size="lg",
@@ -34,6 +41,7 @@ class FigureCard(dbc.Card):
             ],
             className="mb-3 figure-card",
         )
+
         
 class BigFigureCard(dbc.Card):
     def __init__(self, title, id, figure=None, caption=""):

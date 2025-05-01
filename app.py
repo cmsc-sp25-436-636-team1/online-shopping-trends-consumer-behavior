@@ -8,7 +8,7 @@ import plotly.express as px
 import dash_bootstrap_components as dbc
 import dash
 from flask import Flask, redirect
-from pages import shop_navbar
+from pages import Navbar
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css','https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css']
 dbc_css = "https://cdn.jsdelivr.net/gh/AnnMarieW/dash-bootstrap-templates/dbc.min.css"
@@ -61,7 +61,7 @@ def pathnameCallback(path):
 
     return_children = [
         dbc.Col([
-            shop_navbar.navbar_named(pathname_pill_pair[path]),
+            Navbar.navbar_named(pathname_pill_pair[path]),
 
         ], width=12)
         ]

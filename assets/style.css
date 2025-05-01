@@ -50,6 +50,8 @@ html {
 }
 
 
+
+
 #attribution {
     text-align: right;
 }
@@ -568,6 +570,9 @@ html {
 
 }
 
+.h-5vh {
+    height: 5vh;
+}
 
 .otp-graph-util-span {
 
@@ -580,6 +585,7 @@ html {
 
 .nav-bar {
     padding-bottom: 0 !important;
+    --bs-navbar-padding-y: 0.1rem !important;
 }
 
 .nav-tabs .nav-link {

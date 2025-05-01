@@ -56,72 +56,142 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
             label="Consumer Category Overview",
             tab_id="tab-consumer-overview",
             children=[
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Display Mode"),
-                        dbc.RadioItems(
-                            id="overview-display-mode",
-                            options=[
-                                {"label": "% Total Purchases", "value": "percent"},
-                                {"label": "Raw Count", "value": "count"},
+                dbc.Row(
+                    [
+                        # Display Mode (% vs Count)
+                        dbc.Col(
+                            [
+                                html.Label("Display Mode"),
+                                dbc.RadioItems(
+                                    id="overview-display-mode",
+                                    options=[
+                                        {"label": "% Total Purchases", "value": "percent"},
+                                        {"label": "Raw Count",         "value": "count"},
+                                    ],
+                                    value="percent",
+                                    inline=True,
+                                ),
                             ],
-                            value="percent",
-                            inline=True,
-                        )
-                    ], width="3"),
-                    # Gender Filter
-                    dbc.Col([
-                        html.Label("Filter by Gender"),
-                        dcc.Dropdown(
-                            id="gender-filter-overview",
-                            options=[{"label": g, "value": g} for g in df["gender"].unique()],
-                            value=["Male", "Female", "Others"], 
-                            multi=True,
+                            width=3,
                         ),
-                    ], width=3),
 
-                    # Age Category Filter
-                    dbc.Col([
-                        html.Label("Filter by Age Category"),
-                        dcc.Dropdown(
-                            id="age-cat-filter-overview",
-                            options=[{"label": a, "value": a} for a in df["age_category"].cat.categories],
-                            multi=True,
+                        # Gender Filter
+                        dbc.Col(
+                            [
+                                html.Label("Filter by Gender"),
+                                dcc.Dropdown(
+                                    id="gender-filter-overview",
+                                    options=[
+                                        {"label": g, "value": g}
+                                        for g in df["gender"].unique()
+                                    ],
+                                    value=["Male", "Female", "Others"],
+                                    multi=True,
+                                ),
+                            ],
+                            width=3,
                         ),
-                    ], width=3),
 
-                    # Product Category Filter
-                    dbc.Col([
-                        html.Label("Filter by Product Category"),
-                        dcc.Dropdown(
-                            id="product-cat-filter-overview",
-                            options=product_category_options,
-                            multi=True,
+                        # Age-Category Filter
+                        dbc.Col(
+                            [
+                                html.Label("Filter by Age Category"),
+                                dcc.Dropdown(
+                                    id="age-cat-filter-overview",
+                                    options=[
+                                        {"label": a, "value": a}
+                                        for a in df["age_category"].cat.categories
+                                    ],
+                                    multi=True,
+                                ),
+                            ],
+                            width=3,
                         ),
-                    ], width=3),
-                ], className="my-1", style={"font-size": "smaller"}, justify='center', align='center'),
 
+                        # Product-Category Filter
+                        dbc.Col(
+                            [
+                                html.Label("Filter by Product Category"),
+                                dcc.Dropdown(
+                                    id="product-cat-filter-overview",
+                                    options=product_category_options,
+                                    multi=True,
+                                ),
+                            ],
+                            width=3,
+                        ),
+                    ],
+                    className="my-1 text-small",
+                    justify="center",
+                    align="center",
+                    style={"font-size": "smaller"},
+                ),
 
-                dbc.Row([
-                    dbc.Col(FigureCard("Purchase Category Distribution",
-                                       caption="Shows the overall purchase category share. It is computed by the count of events in each category divided by all purchases in the survey", 
-                                       id="fig-overview"), width=6),
-                    dbc.Col(FigureCard("Purchase Category by Gender (%)", 
-                                       caption="Compare Genders view that shows four horizontal bar charts side-by-side that show what share each category represents of that gender’s total purchases",
-                                       id="fig-compare"), width=6),
-                ], className="gy-3"),
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            html.Div(
+                                dbc.RadioItems(
+                                    id="overview-chart-view",
+                                    options=[
+                                        {"label": "Overall",            "value": "overview"},
+                                        {"label": "Facets",             "value": "compare"},
+                                        {"label": "Group",              "value": "shares"},
+                                    ],
+                                    value="overview",
+                                    inline=False,
+                                    inputClassName="btn-check",
+                                    labelClassName="btn btn-outline-primary",
+                                    labelCheckedClassName="btn btn-primary",
+                                    labelStyle={
+                                        "width": "6rem",    
+                                        "height": "2.5rem",   
+                                        "padding": "0.5rem", 
+                                        "whiteSpace": "nowrap",
+                                    },
+                                ),
+                                className="btn-group-vertical",
+                                role="group",
+                            ),
+                            width="auto",        
+                        ),
 
-                dbc.Row([
-                    dbc.Col(FigureCard("Purchase Category Grouped By Gender", 
-                                       caption="Shows the same percentages as “Compare Genders” view but presented as a grouped bar chart instead of facets",
-                                       id="fig-shares"), width=6),
-                    dbc.Col(FigureCard("Gender Share (Pie)", 
-                                       caption="Pie chart of the genders’ share of all purchases from the responses in the survey",
-                                       id="fig-summary"), width=6),
-                ], className="gy-3"),
-            ]
+                        dbc.Col(
+                            FigureCard(
+                                "Purchase Category Breakdown",
+                                caption="Use the toggle on the left to switch views",
+                                id="overview-main-chart",
+                            ),
+                            width=True,           
+                        ),
+                    ],
+                    className="gy-3 align-items-center",
+                ),
+
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            FigureCard(
+                                "Gender Share (Pie)",
+                                caption="Percentage of purchases by gender.",
+                                id="fig-summary",
+                            ),
+                            width=6,
+                        ),
+                        dbc.Col(
+                            FigureCard(
+                                "Product Category Share (Pie)",
+                                caption="Percentage of purchases by product category.",
+                                id="fig-product-pie",
+                            ),
+                            width=6,
+                        ),
+                    ],
+                    className="gy-3",
+                ),
+            ],
         ),
-        
+ 
         dbc.Tab(
             label="Top Purchase Category",
             tab_id="tab-bubble-view",
@@ -168,73 +238,161 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
             ]
         ),
 
+        dbc.Tab(
+            label="Demographics",
+            tab_id="tab-demographics",
+            children=[
 
-        dbc.Tab(label="Demographics", tab_id="tab-demographics", children=[
+                # — Filters + Mode Toggle —
+                dbc.Row(
+                    [
+                         dbc.Col(
+                            [
+                                html.Label("Display Mode"),
+                                dbc.RadioItems(
+                                    id="demographics-mode",
+                                    options=[
+                                        {"label": "Normal",       "value": "normal"},
+                                        {"label": "Distribution", "value": "distribution"},
+                                    ],
+                                    value="normal",
+                                    inline=True,
+                                ),
+                            ],
+                            width=4,
+                        ),
+                         
+                        dbc.Col(
+                            [
+                                html.Label("Filter by Gender"),
+                                dcc.Dropdown(
+                                    id="gender-filter-demographics",
+                                    options=[{"label": g, "value": g} for g in df["gender"].unique()],
+                                    value=list(df["gender"].unique()),
+                                    multi=True,
+                                ),
+                            ],
+                            width=4,
+                        ),
+                        dbc.Col(
+                            [
+                                html.Label("Filter by Age Category"),
+                                dcc.Dropdown(
+                                    id="age-cat-filter-demographics",
+                                    options=[{"label": a, "value": a} for a in df["age_category"].cat.categories],
+                                    value=list(df["age_category"].cat.categories),
+                                    multi=True,
+                                ),
+                            ],
+                            width=4,
+                        ),
+                       
+                    ],
+                    className="my-1",
+                    justify="start",
+                    align="center",
+                    style={"font-size": "smaller"},
+                ),
 
-            # Row 1: Age Category bar + Stacked Age/Gender bar
-            dbc.Row([
-                dbc.Col(FigureCard(
-                    "Purchases by Age Category",
-                    caption="Counts of purchases grouped by predefined age brackets, revealing which age groups contribute most to overall purchasing volume.",
-                    id="age-cat-bar"), width=6),
-                dbc.Col(FigureCard(
-                    "Purchases by Age Category (Stacked by Gender)",
-                    caption="Stacked bar chart showing how each gender contributes to purchases within each age group.",
-                    id="gender-pie"), width=6),
-            ], className="gy-3"),
+                # — Age-Category & Age-by-Gender —
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            FigureCard(
+                                "Purchases by Age Category",
+                                caption="Switch above between simple vs. stacked-by-gender.",
+                                id="age-cat-chart",
+                            ),
+                            width=6,
+                        ),
+                        dbc.Col(
+                            FigureCard(
+                                "Age by Gender",
+                                caption="Box-and-whisker plots of customer ages by gender.",
+                                id="age-box",
+                            ),
+                            width=6,
+                        ),
+                    ],
+                    className="gy-3",
+                ),
 
-            # Row 2: Age by Gender Box + Purchase Frequency by Gender
-            dbc.Row([
-                dbc.Col(FigureCard(
-                    "Age by Gender",
-                    caption="Box‑and‑whisker plots of customer ages split by gender, displaying medians, interquartile ranges, and outliers for direct comparison.",
-                    id="age-box"), width=6),
-                dbc.Col(FigureCard(
-                    "Purchase Frequency by Gender",
-                    caption="Grouped bar chart comparing how often each gender shops, illustrating behavioral differences across demographic segments.",
-                    id="freq-gender-bar"), width=6),
-            ], className="gy-3"),
-        ]),
-           
+                # — Purchase & Browsing Frequency —
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            FigureCard(
+                                "Purchase Frequency",
+                                caption="Shows how often customers shop (modeled on selected display mode).",
+                                id="freq-gender-bar",
+                            ),
+                            width=6,
+                        ),
+                        dbc.Col(
+                            FigureCard(
+                                "Browsing Frequency",
+                                caption="Shows how often customers browse (modeled on selected display mode).",
+                                id="browse-gender-bar",
+                            ),
+                            width=6,
+                        ),
+                    ],
+                    className="gy-3",
+                ),
+            ],
+        ),
+
         dbc.Tab(
             label="Browse Vs Purchase",
             tab_id="tab-corr",
             children=[
+                    dbc.Row([
+                        dbc.Col([
+                            html.Label("Filter by Gender"),
+                            dcc.Dropdown(
+                                id="gender-filter-corr",
+                                options=[{"label": g, "value": g} for g in df["gender"].unique()],
+                                multi=True,
+                            ),
+                        ], width=4),
+                        dbc.Col([
+                            html.Label("Filter by Age Category"),
+                            dcc.Dropdown(
+                                id="age-cat-filter-corr",
+                                options=[{"label": a, "value": a}
+                                        for a in df["age_category"].cat.categories],
+                                multi=True,
+                            ),
+                        ], width=4),
+                        dbc.Col([
+                            html.Label("Filter by Product Category"),
+                            dcc.Dropdown(
+                                id="product-cat-filter-corr",
+                                options=product_category_options,
+                                multi=True,
+                            ),
+                        ], width=4),
+                    ],
+                    className="my-3",
+                    justify='start',
+                    align='center',
+                    style={"font-size": "smaller"}),
+                    dbc.Row([
+                        dbc.Col(
+                            BigFigureCard(
+                                "Browse Vs Purchase Correlation",
+                                id="heatmap-behavior",
+                                caption="Counts of users by browsing vs purchase frequency."
+                            ),
+                            width=6
+                        ),
+                    ],
+                    className="gy-3",
+                    justify='center',
+                    align='center'),
+                ],
+            ),
 
-                # Row 1: filters inside the tab
-                dbc.Row([
-                    dbc.Col([
-                        html.Label("Filter by gender"),
-                        dcc.Dropdown(
-                            id="gender-filter-corr",
-                            options=[{"label": g, "value": g} for g in df["gender"].unique()],
-                            multi=True,
-                        ),
-                    ], width=4),
-                    dbc.Col([
-                        html.Label("Filter by Age Category"),
-                        dcc.Dropdown(
-                            id="age-cat-filter-corr",
-                            options=[{"label": a, "value": a}
-                                    for a in df["age_category"].cat.categories],
-                            multi=True,
-                        ),
-                    ], width=4),
-                ], className="my-3",  justify='center', align='center'),
-
-                # Row 2: the heatmap
-                dbc.Row([
-                    dbc.Col(
-                        FigureCard(
-                            "Browse Vs Purchase Correlation",
-                            id="heatmap-behavior",
-                            caption="Counts of users by browsing vs purchase frequency."
-                        ),
-                        width=6
-                    ),
-                ], className="gy-3", justify='center', align='center'),
-            ],
-        ),
         
         dbc.Tab(
         label="Reviews and Frequency",
@@ -260,7 +418,7 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
                         multi=True,
                     ),
                 ], width=4),
-            ], className="my-3"),
+            ], className="my-3", style={"font-size": "smaller"}),
 
             # Row 2: Box plot + heatmap
             dbc.Row([
@@ -296,139 +454,247 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
     ]),
 ])
 
-
 @callback(
-    Output({"type": "graph", "index": "age-cat-bar"},     "figure"),
-    Output({"type": "graph", "index": "gender-pie"},      "figure"),
-    Output({"type": "graph", "index": "age-box"},         "figure"),
-    Output({"type": "graph", "index": "freq-gender-bar"}, "figure"),
-    Input("dashboard-tabs", "active_tab"),
+    Output({"type": "graph", "index": "age-cat-chart"},     "figure"),
+    Output({"type": "graph", "index": "age-box"},           "figure"),
+    Output({"type": "graph", "index": "freq-gender-bar"},   "figure"),
+    Output({"type": "graph", "index": "browse-gender-bar"}, "figure"),
+    Input("dashboard-tabs",                "active_tab"),
+    Input("gender-filter-demographics",    "value"),
+    Input("age-cat-filter-demographics",   "value"),
+    Input("demographics-mode",             "value"),
 )
-def update_demographics_tab(active_tab): 
+def update_demographics_tab(active_tab, genders, age_cats, mode):
     if active_tab != "tab-demographics":
         raise PreventUpdate
 
-    # 1) Purchases by Age Category (unique customers)
-    age_counts = (
-        df.groupby("age_category")["id"]
-          .nunique()
-          .reset_index(name="purchase_count")
-    )
-    fig_age_cat_bar = px.bar(
-        age_counts,
-        x="age_category",
-        y="purchase_count",
-        template="plotly_white",
-        height=240,
-    )
-    fig_age_cat_bar.update_layout(
-        xaxis_title="Age Category",
-        yaxis_title="Number of Unique Customers",
-        margin=dict(l=40, r=20, t=20, b=120),
-    )
-    fig_age_cat_bar.update_traces(
-        hovertemplate=
-          "<b>Age Group</b>: %{x}<br>" +
-          "<b>Customers</b>: %{y:,}<extra></extra>"
-    )
+    # 1) filter
+    dff = df.copy()
+    if genders:
+        dff = dff[dff["gender"].isin(genders)]
+    if age_cats:
+        dff = dff[dff["age_category"].isin(age_cats)]
 
-    age_gender_counts = (
-        df.groupby(["age_category", "gender"])["id"]
-          .nunique()
-          .reset_index(name="purchase_count")
-    )
-
-    fig_gender_age_stacked = px.bar(
-        age_gender_counts,
-        x="age_category",
-        y="purchase_count",
-        color="gender",
-        barmode="stack",
-        template="plotly_white",
-        height=240,
-    )
-    fig_gender_age_stacked.update_layout(
-        xaxis_title="Age Category",
-        yaxis_title="Number of Unique Customers",
-        legend_title="Gender",
-        margin=dict(l=40, r=20, t=20, b=120),
-    )
-    fig_gender_age_stacked.update_traces(
-        hovertemplate=(
-            "<b>Age Group</b>: %{x}<br>"
-            "<b>Gender</b>: %{legendgroup}<br>"
-            "<b>Customers</b>: %{y:,}<extra></extra>"
+    # 2) Age-Category chart
+    if mode == "normal":
+        age_counts = (
+            dff.groupby("age_category")["id"]
+               .nunique()
+               .reset_index(name="count")
         )
-    )
+        fig_age_cat = px.bar(
+            age_counts,
+            x="age_category",
+            y="count",
+            template="plotly_white",
+            height=300,
+        )
+        fig_age_cat.update_layout(
+            xaxis_title="Age Category",
+            yaxis_title="Unique Customers",
+            margin=dict(l=40, r=20, t=20, b=60),
+        )
+        fig_age_cat.update_traces(
+            hovertemplate="<b>Age Group</b>: %{x}<br><b>Customers</b>: %{y:,}<extra></extra>"
+        )
+    else:  # distribution
+        age_gender = (
+            dff.groupby(["age_category", "gender"])["id"]
+               .nunique()
+               .reset_index(name="count")
+        )
+        fig_age_cat = px.bar(
+            age_gender,
+            x="age_category",
+            y="count",
+            color="gender",
+            barmode="stack",
+            template="plotly_white",
+            height=300,
+            color_discrete_map=gender_color,
+        )
+        fig_age_cat.update_layout(
+            xaxis_title="Age Category",
+            yaxis_title="Unique Customers",
+            legend_title="Gender",
+            margin=dict(l=40, r=20, t=20, b=60),
+        )
+        fig_age_cat.update_traces(
+            hovertemplate=(
+                "<b>Age Group</b>: %{x}<br>"
+                "<b>Gender</b>: %{legendgroup}<br>"
+                "<b>Customers</b>: %{y:,}<extra></extra>"
+            )
+        )
 
-    # 3) Age by gender (drop duplicate IDs)
-    df_age = df.drop_duplicates(subset="id")[["gender", "age"]]
+    # 3) Age by Gender (always the same)
+    df_age = dff.drop_duplicates(subset="id")[["gender", "age"]]
     fig_age_box = px.box(
         df_age,
         x="gender",
         y="age",
         template="plotly_white",
-        height=240,
+        height=300,
     )
     fig_age_box.update_layout(
-        xaxis_title="gender",
+        xaxis_title="Gender",
         yaxis_title="Age",
-        margin=dict(l=40, r=20, t=20, b=120),
+        margin=dict(l=40, r=20, t=20, b=60),
     )
     fig_age_box.update_traces(
-        hovertemplate=
-          "<b>gender</b>: %{x}<br>" +
-          "<b>Age</b>: %{y}<extra></extra>"
+        hovertemplate="<b>Gender</b>: %{x}<br><b>Age</b>: %{y}<extra></extra>"
     )
 
-    # 4) Purchase Frequency by gender (unique customers)
-    freq_gender = (
-    df.groupby(["gender", "purchase_frequency"])["id"]
-      .nunique()
-      .reset_index(name="count")
-    )
+    # 4) Purchase Frequency
+    if mode == "normal":
+        freq_total = (
+            dff.groupby("purchase_frequency")["id"]
+               .nunique()
+               .reset_index(name="count")
+        )
+        fig_freq = px.bar(
+            freq_total,
+            x="purchase_frequency",
+            y="count",
+            template="plotly_white",
+            height=300,
+            category_orders={"purchase_frequency": [
+                "Less than once a month",
+                "Once a month",
+                "Few times a month",
+                "Once a week",
+                "Multiple times a week",
+            ]},
+        )
+        fig_freq.update_layout(
+            xaxis_title="Purchase Frequency",
+            yaxis_title="Unique Customers",
+            xaxis_tickangle=-45,
+            margin=dict(l=40, r=20, t=20, b=60),
+            showlegend=False,
+        )
+        fig_freq.update_traces(
+            hovertemplate="<b>Purchase Frequency</b>: %{x}<br><b>Customers</b>: %{y:,}<extra></extra>"
+        )
+    else:
+        freq_gender = (
+            dff.groupby(["gender", "purchase_frequency"])["id"]
+               .nunique()
+               .reset_index(name="count")
+        )
+        fig_freq = px.bar(
+            freq_gender,
+            x="purchase_frequency",
+            y="count",
+            color="gender",
+            barmode="group",
+            template="plotly_white",
+            height=300,
+            color_discrete_map=gender_color,
+            category_orders={"purchase_frequency": [
+                "Less than once a month",
+                "Once a month",
+                "Few times a month",
+                "Once a week",
+                "Multiple times a week",
+            ]},
+        )
+        fig_freq.update_layout(
+            xaxis_title="Purchase Frequency",
+            yaxis_title="Unique Customers",
+            xaxis_tickangle=-45,
+            legend_title="Gender",
+            margin=dict(l=40, r=20, t=20, b=60),
+        )
+        fig_freq.update_traces(
+            customdata=freq_gender[["gender"]].values,
+            hovertemplate=(
+                "<b>Purchase Frequency</b>: %{x}<br>"
+                "<b>Customers</b>: %{y:,}<br>"
+                "<b>Gender</b>: %{customdata[0]}<extra></extra>"
+            )
+        )
 
-    fig_freq_gender_bar = px.bar(
-        freq_gender,
-        x="purchase_frequency",
-        y="count",
-        color="gender",
-        barmode="group",
-        template="plotly_white",
-        height=240,
-        custom_data=["gender"]          
-    )
+    # 5) Browsing Frequency
+    if mode == "normal":
+        browse_total = (
+            dff.groupby("browsing_frequency")["id"]
+               .nunique()
+               .reset_index(name="count")
+        )
+        fig_browse = px.bar(
+            browse_total,
+            x="browsing_frequency",
+            y="count",
+            template="plotly_white",
+            height=300,
+            category_orders={"browsing_frequency": [
+                "Less than once a month",
+                "Once a month",
+                "Few times a month",
+                "Once a week",
+                "Multiple times a week",
+            ]},
+        )
+        fig_browse.update_layout(
+            xaxis_title="Browsing Frequency",
+            yaxis_title="Unique Customers",
+            xaxis_tickangle=-45,
+            margin=dict(l=40, r=20, t=20, b=60),
+            showlegend=False,
+        )
+        fig_browse.update_traces(
+            hovertemplate="<b>Browsing Frequency</b>: %{x}<br><b>Customers</b>: %{y:,}<extra></extra>"
+        )
+    else:
+        browse_gender = (
+            dff.groupby(["gender", "browsing_frequency"])["id"]
+               .nunique()
+               .reset_index(name="count")
+        )
+        fig_browse = px.bar(
+            browse_gender,
+            x="browsing_frequency",
+            y="count",
+            color="gender",
+            barmode="group",
+            template="plotly_white",
+            height=300,
+            color_discrete_map=gender_color,
+            category_orders={"browsing_frequency": [
+                "Less than once a month",
+                "Once a month",
+                "Few times a month",
+                "Once a week",
+                "Multiple times a week",
+            ]},
+        )
+        fig_browse.update_layout(
+            xaxis_title="Browsing Frequency",
+            yaxis_title="Unique Customers",
+            xaxis_tickangle=-45,
+            legend_title="Gender",
+            margin=dict(l=40, r=20, t=20, b=60),
+        )
+        fig_browse.update_traces(
+            customdata=browse_gender[["gender"]].values,
+            hovertemplate=(
+                "<b>Browsing Frequency</b>: %{x}<br>"
+                "<b>Customers</b>: %{y:,}<br>"
+                "<b>Gender</b>: %{customdata[0]}<extra></extra>"
+            )
+        )
 
-    fig_freq_gender_bar.update_layout(
-        xaxis_title="Purchase Frequency",
-        yaxis_title="Number of Unique Customers",
-        margin=dict(l=40, r=20, t=20, b=200),
-        xaxis_tickangle=-45,
-        legend_title="gender"
-    )
+    return fig_age_cat, fig_age_box, fig_freq, fig_browse
 
-    fig_freq_gender_bar.update_traces(
-        hovertemplate=
-        "<b>Purchase Frequency</b>: %{x}<br>" +
-        "<b>Customers</b>: %{y:,}<br>" +
-        "<b>gender</b>: %{customdata[0]}<extra></extra>"
-    )
-
-    return (
-        fig_age_cat_bar,
-        fig_gender_age_stacked,
-        fig_age_box,
-        fig_freq_gender_bar,
-    )
-   
-    
 @callback(
     Output({"type": "graph", "index": "heatmap-behavior"}, "figure"),
-    Input("dashboard-tabs",        "active_tab"),
-    Input("gender-filter-corr",    "value"),
-    Input("age-cat-filter-corr",   "value"),
+    Input("dashboard-tabs",             "active_tab"),
+    Input("gender-filter-corr",         "value"),
+    Input("age-cat-filter-corr",        "value"),
+    Input("product-cat-filter-corr",    "value"),   # new input
 )
-def update_correlation_heatmap(active_tab, genders, age_cats):
+def update_correlation_heatmap(active_tab, genders, age_cats, product_values):
     if active_tab != "tab-corr":
         raise PreventUpdate
 
@@ -437,6 +703,9 @@ def update_correlation_heatmap(active_tab, genders, age_cats):
         dff = dff[dff["gender"].isin(genders)]
     if age_cats:
         dff = dff[dff["age_category"].isin(age_cats)]
+    if product_values:
+        # df was exploded on purchase_categories, so this filters correctly
+        dff = dff[dff["purchase_categories"].isin(product_values)]
 
     heat_data = pd.crosstab(
         index=dff["browsing_frequency"],
@@ -457,131 +726,199 @@ def update_correlation_heatmap(active_tab, genders, age_cats):
         margin=dict(l=40, r=20, t=30, b=80),
     )
     fig.update_traces(
-        hovertemplate=
-          "<b>Browsing</b>: %{y}<br>" +
-          "<b>Purchase</b>: %{x}<br>" +
+        hovertemplate=(
+          "<b>Browsing</b>: %{y}<br>"
+          "<b>Purchase</b>: %{x}<br>"
           "<b>Users</b>: %{z:,}<extra></extra>"
+        )
     )
     return fig
 
 @callback(
-    Output({"type": "graph", "index": "fig-overview"}, "figure"),
-    Output({"type": "graph", "index": "fig-compare"}, "figure"),
-    Output({"type": "graph", "index": "fig-shares"}, "figure"),
-    Output({"type": "graph", "index": "fig-summary"}, "figure"),
-    Input("gender-filter-overview", "value"),
-    Input("age-cat-filter-overview", "value"),
-    Input("product-cat-filter-overview", "value"),
-    Input("overview-display-mode", "value"),  # new toggle input
-    Input("dashboard-tabs", "active_tab"),
+    Output({"type": "graph",     "index": "overview-main-chart"}, "figure"),
+    Output({"type": "fig-title", "index": "overview-main-chart"}, "children"),
+    Output({"type": "fig-caption", "index": "overview-main-chart"}, "children"),
+    Output({"type": "graph", "index": "fig-summary"},     "figure"),
+    Output({"type": "graph", "index": "fig-product-pie"}, "figure"),
+    Input("gender-filter-overview",     "value"),
+    Input("age-cat-filter-overview",    "value"),
+    Input("product-cat-filter-overview","value"),
+    Input("overview-display-mode",      "value"),
+    Input("overview-chart-view",        "value"),
+    Input("dashboard-tabs",             "active_tab"),
 )
-def update_consumer_overview_tab(gender_values, age_values, product_values, display_mode, active_tab):
+def update_consumer_overview_tab(genders, ages, products, display_mode, view, active_tab):
     if active_tab != "tab-consumer-overview":
         raise PreventUpdate
 
+    # 1) filter
     dff = df.copy()
-    if gender_values:
-        dff = dff[dff["gender"].isin(gender_values)]
-    if age_values:
-        dff = dff[dff["age_category"].isin(age_values)]
-    if product_values:
-        dff = dff[dff["purchase_categories"].isin(product_values)]
+    if genders:
+        dff = dff[dff["gender"].isin(genders)]
+    if ages:
+        dff = dff[dff["age_category"].isin(ages)]
+    if products:
+        dff = dff[dff["purchase_categories"].isin(products)]
 
-    # Aggregates
-    overall_summary = (
+    # 2) prepare aggregates
+    # — overall per category —
+    overall = (
         dff.groupby("purchase_categories")
-        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
-        .reset_index()
+           .agg(RawCount=('purchase_categories','size'),
+                AvgAge=('age','mean'))
+           .reset_index()
     )
-    overall_summary['Pct of Purchases'] = (
-        overall_summary['RawCount'] / overall_summary['RawCount'].sum() * 100
-    )
-    overall_summary['AvgAge'] = overall_summary['AvgAge'].round().astype('Int64')
+    overall["Pct of Purchases"] = overall["RawCount"] / overall["RawCount"].sum() * 100
+    overall["AvgAge"] = overall["AvgAge"].round().astype("Int64")
 
-    summary_df = (
-        dff.groupby(['gender', 'purchase_categories'])
-        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
-        .reset_index()
+    # — per-gender facets & grouped —
+    summary = (
+        dff.groupby(["gender","purchase_categories"])
+           .agg(RawCount=('purchase_categories','size'),
+                AvgAge=('age','mean'))
+           .reset_index()
     )
-    summary_df['Pct of Purchases'] = (
-        summary_df['RawCount'] / summary_df.groupby('gender')['RawCount'].transform('sum') * 100
+    summary["Pct of Purchases"] = (
+        summary["RawCount"]
+        / summary.groupby("gender")["RawCount"].transform("sum")
+        * 100
     )
-    summary_df['AvgAge'] = summary_df['AvgAge'].round().astype('Int64')
+    summary["AvgAge"] = summary["AvgAge"].round().astype("Int64")
 
-    gender_summary_df = (
+    # — gender totals for pie —
+    gender_totals = (
         dff.groupby("gender")
-        .agg(RawCount=('purchase_categories', 'size'), AvgAge=('age', 'mean'))
-        .reset_index()
+           .agg(RawCount=('purchase_categories','size'))
+           .reset_index()
     )
-    gender_summary_df['Pct of Purchases'] = (
-        gender_summary_df['RawCount'] / gender_summary_df['RawCount'].sum() * 100
-    )
-    gender_summary_df['AvgAge'] = gender_summary_df['AvgAge'].round().astype('Int64')
-
-    # Determine mode
-    metric_col = "Pct of Purchases" if display_mode == "percent" else "RawCount"
-    metric_label = "% of Total Purchases" if display_mode == "percent" else "Raw Count"
-    x_tickformat = ".1f%" if display_mode == "percent" else None
-
-    # --- Overview Chart
-    fig_overview = px.bar(
-        overall_summary,
-        x=metric_col, y='purchase_categories', orientation='h',
-        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
-    )
-    fig_overview.update_layout(xaxis_tickformat=x_tickformat)
-    fig_overview.update_traces(
-        customdata=overall_summary[['RawCount', 'Pct of Purchases', 'AvgAge']].values,
-        hovertemplate="<b>%{y}</b><br>Count: %{customdata[0]}<br>Share: %{customdata[1]:.1f}%<br>Avg Age: %{customdata[2]}<extra></extra>"
+    gender_totals["Pct of Purchases"] = (
+        gender_totals["RawCount"] / gender_totals["RawCount"].sum() * 100
     )
 
-    # --- Compare Chart (facets)
+    # — product-category pie —
+    prod_totals = (
+        dff.groupby("purchase_categories")
+           .agg(RawCount=('purchase_categories','size'))
+           .reset_index()
+    )
+    prod_totals["Pct of Purchases"] = (
+        prod_totals["RawCount"] / prod_totals["RawCount"].sum() * 100
+    )
+
+    # 3) (Re)build the three “overview” variants
+    metric = "Pct of Purchases" if display_mode=="percent" else "RawCount"
+    label  = "% of Total Purchases" if display_mode=="percent" else "Raw Count"
+    fmt    = ".1f%" if display_mode=="percent" else None
+
+    # --- 1) Overall distribution ---
+    fig_overall = px.bar(
+        overall,
+        x=metric, y="purchase_categories",
+        orientation="h",
+        labels={"purchase_categories":"Purchase Category", metric:label},
+    )
+    fig_overall.update_layout(xaxis_tickformat=fmt)
+    fig_overall.update_traces(
+        customdata=overall[["RawCount","Pct of Purchases","AvgAge"]].values,
+        hovertemplate=(
+            "<b>%{y}</b><br>"
+            "Count: %{customdata[0]}<br>"
+            "Share: %{customdata[1]:.1f}%<br>"
+            "Avg Age: %{customdata[2]}<extra></extra>"
+        )
+    )
+
+    # --- 2) Faceted by gender ---
     fig_compare = px.bar(
-        summary_df,
-        x=metric_col, y='purchase_categories', color='gender', facet_col='gender',
-        color_discrete_map=gender_color, orientation='h',
-        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
+        summary,
+        x=metric, y="purchase_categories",
+        color="gender", facet_col="gender",
+        orientation="h",
+        color_discrete_map=gender_color,
+        labels={"purchase_categories":"Purchase Category", metric:label},
     )
     fig_compare.for_each_annotation(lambda a: a.update(text=a.text.split("=")[-1]))
-    fig_compare.update_layout(legend_title_text="Gender", xaxis_tickformat=x_tickformat)
+    fig_compare.update_layout(legend_title_text="Gender", xaxis_tickformat=fmt)
     for trace in fig_compare.data:
-        gender = trace.name
-        sub = summary_df[summary_df['gender'] == gender]
-        trace.customdata = sub[['RawCount', 'Pct of Purchases', 'AvgAge']].values
-        trace.hovertemplate = (
-            f"<b>%{{y}}</b><br>Gender: {gender}<br>Count: %{{customdata[0]}}<br>Share: %{{customdata[1]:.1f}}%<br>Avg Age: %{{customdata[2]}}<extra></extra>"
+        g = trace.name
+        sub = summary[summary["gender"]==g]
+        trace.customdata   = sub[["RawCount","Pct of Purchases","AvgAge"]].values
+        trace.hovertemplate=(
+            f"<b>%{{y}}</b><br>"
+            f"Gender: {g}<br>"
+            "Count: %{customdata[0]}<br>"
+            "Share: %{customdata[1]:.1f}%<br>"
+            "Avg Age: %{customdata[2]}<extra></extra>"
         )
 
-    # --- Grouped Bar
+    # --- 3) Grouped by gender ---
     fig_shares = px.bar(
-        summary_df,
-        x=metric_col, y='purchase_categories', color='gender', barmode='group',
-        color_discrete_map=gender_color, orientation='h',
-        labels={'purchase_categories': 'Purchase Categories', metric_col: metric_label},
+        summary,
+        x=metric, y="purchase_categories",
+        color="gender", barmode="group",
+        color_discrete_map=gender_color,
+        orientation="h",
+        labels={"purchase_categories":"Purchase Category", metric:label},
     )
-
-    fig_shares.update_layout(legend_title_text="Gender", xaxis_tickformat=x_tickformat)
+    fig_shares.update_layout(legend_title_text="Gender", xaxis_tickformat=fmt)
     for trace in fig_shares.data:
-        gender = trace.name
-        sub = summary_df[summary_df['gender'] == gender]
-        trace.customdata = sub[['RawCount', 'Pct of Purchases', 'AvgAge']].values
+        g = trace.name
+        sub = summary[summary["gender"]==g]
+        trace.customdata    = sub[["RawCount","Pct of Purchases","AvgAge"]].values
         trace.hovertemplate = (
-            f"<b>Category:</b> %{{y}}<br>Gender: {gender}<br>Count: %{{customdata[0]}}<br>Share: %{{customdata[1]:.1f}}%<br>Avg Age: %{{customdata[2]}}<extra></extra>"
+            f"<b>%{{y}}</b><br>"
+            f"Gender: {g}<br>"
+            "Count: %{customdata[0]}<br>"
+            "Share: %{customdata[1]:.1f}%<br>"
+            "Avg Age: %{customdata[2]}<extra></extra>"
         )
 
-    # --- Pie Chart (always shows percent)
-    fig_summary = px.pie(
-        gender_summary_df,
-        values='Pct of Purchases', names='gender', color='gender',
-        color_discrete_map=gender_color, hole=0.4
-    )
-    fig_summary.update_traces(
-        textinfo='percent+label', textfont_size=18,
-        hoverinfo='label+percent+value'
-    )
-    fig_summary.update_layout(legend_title_text="Gender")
+    # pick the one to show
+    main_map = {
+        "overview": fig_overall,
+        "compare":  fig_compare,
+        "shares":   fig_shares,
+    }
+    fig_main = main_map[view]
+    
+    title_map = {
+        "overview": "Purchase Category Distribution Summary",
+        "compare":  "Purchase Category Facecet Breakdown by Gender",
+        "shares":   "Purchase Category Grouped By Gender",
+    }
+    caption_map = {
+        "overview": "Shows the overall purchase category share. It is computed by the count of events in each category divided by all purchases in the survey",
+        "compare":  "Compare Genders view that shows horizontal bar charts side-by-side that show what share each category represents of that gender’s total purchases",
+        "shares":   "Shows the same percentages as “Compare Genders” view but presented as a grouped bar chart instead of facets",
+    }
+    title   = title_map[view]
+    caption = caption_map[view]
 
-    return fig_overview, fig_compare, fig_shares, fig_summary
+    # 4) Gender‐share pie
+    fig_gender_pie = px.pie(
+        gender_totals,
+        values="Pct of Purchases",
+        names="gender",
+        color="gender",
+        hole=0.4,
+        color_discrete_map=gender_color,
+    )
+    fig_gender_pie.update_traces(textinfo="percent+label", textfont_size=16)
+
+    # 5) Product‐category pie
+    fig_prod_pie = px.pie(
+        prod_totals,
+        values="Pct of Purchases",
+        names="purchase_categories",
+        hole=0.4,
+        template="plotly_white",
+    )
+    fig_prod_pie.update_layout(
+        legend_title="Product Category",
+    )
+    fig_prod_pie.update_traces(textinfo="percent+label", textfont_size=14)
+
+    return fig_main, title, caption, fig_gender_pie, fig_prod_pie
 
 
 @callback(
@@ -693,3 +1030,146 @@ def update_bubble_chart(genders, ages, products, view_mode, active_tab):
     )
 
     return fig, title, caption, gender_options, age_options, product_options
+
+from dash import Input, Output, callback
+from dash.exceptions import PreventUpdate
+import plotly.express as px
+import pandas as pd
+import numpy as np
+
+@callback(
+    Output({"type": "graph", "index": "imp-by-freq"},  "figure"),
+    Output({"type": "graph", "index": "rel-by-freq"},  "figure"),
+    Output({"type": "graph", "index": "imp-trend"},    "figure"),
+    Output({"type": "graph", "index": "imp-vs-rel"},   "figure"),
+    Input("dashboard-tabs",         "active_tab"),
+    Input("gender-filter-rev",      "value"),
+    Input("age-cat-filter-rev",     "value"),
+)
+def update_reviews_tab(active_tab, genders, age_cats):
+    if active_tab != "tab-reviews":
+        raise PreventUpdate
+
+    # 1) apply filters
+    dff = df.copy()
+    if genders:
+        dff = dff[dff["gender"].isin(genders)]
+    if age_cats:
+        dff = dff[dff["age_category"].isin(age_cats)]
+
+    # 2) enforce purchase-frequency order
+    FREQ_ORDER = [
+        "Less than once a month",
+        "Once a month",
+        "Few times a month",
+        "Once a week",
+        "Multiple times a week",
+    ]
+    dff["purchase_frequency"] = pd.Categorical(
+        dff["purchase_frequency"], categories=FREQ_ORDER, ordered=True
+    )
+
+    # a) Review Importance by Purchase Frequency (box)
+    fig_imp_by_freq = px.box(
+        dff,
+        x="purchase_frequency",
+        y="customer_reviews_importance",
+        template="plotly_white",
+        height=300,
+    )
+    fig_imp_by_freq.update_layout(
+        xaxis_title="Purchase Frequency",
+        yaxis_title="Review Importance",
+        margin=dict(l=40, r=20, t=20, b=80),
+    )
+    fig_imp_by_freq.update_traces(
+        hovertemplate="<b>Freq</b>: %{x}<br><b>Importance</b>: %{y}<extra></extra>"
+    )
+
+    # b) Review Reliability Distribution by Purchase Frequency (heatmap)
+    rel_levels = sorted(dff["review_reliability"].dropna().unique())
+    heat_rel = pd.crosstab(
+        index=dff["purchase_frequency"],
+        columns=dff["review_reliability"],
+    ).reindex(index=FREQ_ORDER, columns=rel_levels, fill_value=0)
+
+    fig_rel_by_freq = px.imshow(
+        heat_rel,
+        text_auto=True,
+        aspect="auto",
+        template="plotly_white",
+        color_continuous_scale="Viridis",
+        height=300,
+    )
+    fig_rel_by_freq.update_layout(
+        xaxis_title="Review Reliability",
+        yaxis_title="Purchase Frequency",
+        margin=dict(l=40, r=20, t=20, b=80),
+    )
+    fig_rel_by_freq.update_xaxes(categoryorder="array", categoryarray=rel_levels)
+    fig_rel_by_freq.update_yaxes(categoryorder="array", categoryarray=FREQ_ORDER)
+    fig_rel_by_freq.update_traces(
+        hovertemplate="<b>Freq</b>: %{y}<br><b>Reliability</b>: %{x}<br><b>Count</b>: %{z}<extra></extra>"
+    )
+
+    # c) Average Review Importance by Purchase Frequency (bar)
+    avg_imp = (
+        dff.groupby("purchase_frequency")["customer_reviews_importance"]
+           .mean()
+           .reset_index(name="avg_importance")
+    )
+    fig_imp_trend = px.bar(
+        avg_imp,
+        x="purchase_frequency",
+        y="avg_importance",
+        template="plotly_white",
+        height=300,
+    )
+    fig_imp_trend.update_layout(
+        xaxis_title="Purchase Frequency",
+        yaxis_title="Average Importance",
+        margin=dict(l=40, r=20, t=20, b=80),
+    )
+    fig_imp_trend.update_traces(
+        hovertemplate="<b>Freq</b>: %{x}<br><b>Avg Importance</b>: %{y:.2f}<extra></extra>"
+    )
+
+    # d) Importance vs Reliability Ratings — jittered scatter
+    df_scatter = dff.copy()
+    # jitter x around the categorical code
+    df_scatter["xf"] = (
+        df_scatter["purchase_frequency"].cat.codes.astype(float)
+        + np.random.uniform(-0.2, 0.2, len(df_scatter))
+    )
+    # jitter y around the importance scale 1–5
+    df_scatter["yf"] = (
+        df_scatter["customer_reviews_importance"].astype(float) - 1
+        + np.random.uniform(-0.1, 0.1, len(df_scatter))
+    )
+
+    fig_imp_vs_rel = px.scatter(
+        df_scatter,
+        x="xf",
+        y="yf",
+        color="review_reliability",
+        template="plotly_white",
+        height=300,
+        hover_data=["purchase_frequency", "customer_reviews_importance", "review_reliability"],
+        color_discrete_map=None,  # or your custom map
+    )
+    # restore original tick labels
+    fig_imp_vs_rel.update_xaxes(
+        tickmode="array",
+        tickvals=list(range(len(FREQ_ORDER))),
+        ticktext=FREQ_ORDER,
+        title_text="Purchase Frequency",
+    )
+    fig_imp_vs_rel.update_yaxes(
+        tickmode="array",
+        tickvals=[0, 1, 2, 3, 4],
+        ticktext=[1, 2, 3, 4, 5],
+        title_text="Review Importance",
+    )
+    fig_imp_vs_rel.update_traces(marker=dict(size=6, opacity=0.6))
+
+    return fig_imp_by_freq, fig_rel_by_freq, fig_imp_trend, fig_imp_vs_rel
