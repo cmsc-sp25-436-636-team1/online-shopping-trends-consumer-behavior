@@ -392,7 +392,6 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
                     align='center'),
                 ],
             ),
-
         
         dbc.Tab(
         label="Reviews and Frequency",
@@ -449,8 +448,7 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
             ], className="gy-3"),
         ]
     )
-
-        
+      
     ]),
 ])
 

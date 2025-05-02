@@ -9,14 +9,21 @@ This is a Plotly Dash application for analyzing the behavioral analysis of Amazo
 - [Dash Bootstrap Components](https://dash-bootstrap-components.opensource.faculty.ai/)
 - [Pandas](https://pandas.pydata.org/)
 
-
-#### Environment Variables 
+#### Important: Environment Variables 
 ---
-Need env variable file
+Need env variable file storing database connection url
+
+#### Database 
+---
+Original Dataset: [Amazon consumer Behaviour Dataset](https://www.kaggle.com/datasets/swathiunnikrishnan/amazon-consumer-behaviour-dataset/code).
+
+However, we have migrated it to a cloud PostgresSQL server.
+
+The database is hosted in [Supabase](https://supabase.com/).
 
 #### Deployment
 ---
-This app is deployed using [Render](https://render.com/).
+This app is deployed using [Render](https://render.com/). Free Tier. Oftentimes, the service requires a jumpstart and might take more than 30 seconds to load.
 
 #### Running Locally 
 ---
@@ -41,7 +48,10 @@ pip install -r requirements.txt
 python app.py
 ```
 
-
 #### Contact
 ---
-[ttran19@umbc.edu](mailto:ttran19@umbc.edu)
+Thanh Nam Tran [ttran19@umbc.edu](mailto:ttran19@umbc.edu)  
+Olivia Patterson [opatter1@umbc.edu](mailto:opatter1@umbc.edu)  
+Ajeetha Arudchandran [aarudch1@umbc.edu](mailto:aarudch1@umbc.edu)  
+Allyson Nguyen [anguye19@umbc.edu](mailto:anguye19@umbc.edu)  
+Tessa Byrum [tbyrum1@umbc.edu](mailto:ttran19@umbc.edu)  
