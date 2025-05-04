@@ -9,6 +9,9 @@ from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 from layout.components.FigureCard import FigureCard, BigFigureCard
 from dash.exceptions import PreventUpdate
+from dash import Input, Output, callback, dcc
+from dash.exceptions import PreventUpdate
+from urllib.parse import parse_qs
 
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
@@ -48,9 +51,11 @@ gender_color = {
 product_category_options = [{"label": c, "value": c} for c in sorted(df["purchase_categories"].unique())]
 
 layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor": "#faf9f5"}, children=[
+    dcc.Location(id="url", refresh=False),
+    dcc.Store(id="initial-tab-store", storage_type="memory"),
 
     # ——— Tabs ———
-    dbc.Tabs(id="dashboard-tabs", active_tab="tab-consumer-overview", className="mb-1 text-small", children=[
+    dbc.Tabs(id="dashboard-tabs", className="mb-1 text-small", children=[
 
         dbc.Tab(
             label="Consumer Category Overview",
@@ -785,10 +790,12 @@ def update_consumer_overview_tab(genders, ages, products, display_mode, view, ac
 
     # — gender totals for pie —
     gender_totals = (
-        dff.groupby("gender")
-           .agg(RawCount=('purchase_categories','size'))
-           .reset_index()
-    )
+            dff.drop_duplicates(subset="id")
+            .groupby("gender")
+            .agg(RawCount=('id','count'))
+            .reset_index()
+        )
+
     gender_totals["Pct of Purchases"] = (
         gender_totals["RawCount"] / gender_totals["RawCount"].sum() * 100
     )
@@ -892,21 +899,36 @@ def update_consumer_overview_tab(genders, ages, products, display_mode, view, ac
     title   = title_map[view]
     caption = caption_map[view]
 
+    pie_value_col = "Pct of Purchases" if display_mode == "percent" else "RawCount"
+    text_info = "percent+label" if display_mode == "percent" else "label+value"
+    hover_fmt = (
+        "<b>%{label}</b><br>Share: %{percent:.1%}<extra></extra>"
+        if display_mode == "percent"
+        else "<b>%{label}</b><br>Count: %{value:,}<extra></extra>"
+    )
+
     # 4) Gender‐share pie
     fig_gender_pie = px.pie(
         gender_totals,
-        values="Pct of Purchases",
+        values=pie_value_col,
         names="gender",
         color="gender",
         hole=0.4,
         color_discrete_map=gender_color,
     )
-    fig_gender_pie.update_traces(textinfo="percent+label", textfont_size=16)
+    fig_gender_pie.update_layout(
+        legend_title="Gender",
+    )
+    fig_gender_pie.update_traces(
+        textinfo=text_info,
+        textfont_size=16,
+        hovertemplate=hover_fmt,
+    )
 
     # 5) Product‐category pie
     fig_prod_pie = px.pie(
         prod_totals,
-        values="Pct of Purchases",
+        values=pie_value_col,
         names="purchase_categories",
         hole=0.4,
         template="plotly_white",
@@ -914,7 +936,12 @@ def update_consumer_overview_tab(genders, ages, products, display_mode, view, ac
     fig_prod_pie.update_layout(
         legend_title="Product Category",
     )
-    fig_prod_pie.update_traces(textinfo="percent+label", textfont_size=14)
+    fig_prod_pie.update_traces(
+        textinfo=text_info,
+        textfont_size=14,
+        hovertemplate=hover_fmt,
+    )
+
 
     return fig_main, title, caption, fig_gender_pie, fig_prod_pie
 
@@ -1171,3 +1198,14 @@ def update_reviews_tab(active_tab, genders, age_cats):
     fig_imp_vs_rel.update_traces(marker=dict(size=6, opacity=0.6))
 
     return fig_imp_by_freq, fig_rel_by_freq, fig_imp_trend, fig_imp_vs_rel
+
+@callback(
+    Output("dashboard-tabs", "active_tab"),
+    Input("url", "search"),
+)
+def sync_tab_with_url(search):
+    from urllib.parse import parse_qs
+    if not search:
+        return "tab-consumer-overview"
+    parsed = parse_qs(search.lstrip("?"))
+    return parsed.get("tab", ["tab-consumer-overview"])[0]

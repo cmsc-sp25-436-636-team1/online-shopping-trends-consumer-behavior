@@ -183,7 +183,7 @@ layout = html.Div([
     ], bg="primary"),
 
 
-    # 4) Dashboard CTA section (center‑aligned)
+   # 4) Dashboard CTA section (center‑aligned)
     section([
         dbc.Container([
 
@@ -209,6 +209,44 @@ layout = html.Div([
                 **{"data-aos": "fade-up", "data-aos-delay": "200"}
             ),
 
+            # NEW: Dashboard Tab Descriptions
+            html.Div(
+                [
+                    dbc.Row([
+                        dbc.Col([
+                            html.Div([
+                                html.H5(dcc.Link("📊 Consumer Category Overview", href="/Dashboard?tab=tab-consumer-overview", refresh=False), className="fw-bold"),
+                                html.P("To view a breakdown of the purchase categories and genders in the dataset, check out this tab on the dashboard")
+                            ], className="mb-3"),
+
+                            html.Div([
+                                html.H5(dcc.Link("🫧 Top Purchase Frequency", href="/Dashboard?tab=tab-bubble-view", refresh=False), className="fw-bold"),
+                                html.P("If you want to analyze correlations between purchase category, age, purchase frequency, gender, and the number of matches for those variables, check out our bubble plot in this tab on the dashboard")
+                            ], className="mb-3"),
+
+                            html.Div([
+                                html.H5(dcc.Link("🧍 Demographics", href="/Dashboard?tab=tab-demographics", refresh=False), className="fw-bold"),
+                                html.P("To explore the demographics of the dataset, such as purchases by category, purchase frequency, age by gender, and browsing frequency, check out this tab on the dashboard")
+                            ], className="mb-3"),
+
+                            html.Div([
+                                html.H5(dcc.Link("🌡️ Browse vs Purchase", href="/Dashboard?tab=tab-corr", refresh=False), className="fw-bold"),
+                                html.P("To view a heatmap of the browsing frequency and purchase frequency correlation, check out this tab on the dashboard")
+                            ], className="mb-3"),
+
+                            html.Div([
+                                html.H5(dcc.Link("⭐ Reviews and Frequency", href="/Dashboard?tab=tab-reviews", refresh=False), className="fw-bold"),
+                                html.P("To explore and analyze correlations between purchase frequency and product reviews, check out this tab on the dashboard")
+                            ], className="mb-3"),
+
+
+                            html.P(["Our dashboard tabs offer various display modes, views, and filters for the visualizations, so be sure to check those out and explore!"],className="text-center",)
+                        ], width=12, md=10)
+                    ], className="justify-content-center my-4")
+                ],
+                **{"data-aos": "fade-up", "data-aos-delay": "300"}
+            ),
+
             # Illustration
             html.Div(
                 html.Img(
@@ -219,8 +257,9 @@ layout = html.Div([
                 className="text-center my-2",
                 **{"data-aos": "zoom-in", "data-aos-delay": "600"}
             ),
-            
-             html.Div(
+
+            # CTA Button
+            html.Div(
                 dbc.Button(
                     "See Our Dashboard",
                     href="/Dashboard",
@@ -238,6 +277,7 @@ layout = html.Div([
 
         ])
     ], bg="light"),
+
 
 
 ])

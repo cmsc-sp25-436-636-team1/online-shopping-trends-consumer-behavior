@@ -25,6 +25,10 @@ The database is hosted in [Supabase](https://supabase.com/).
 ---
 This app is deployed using [Render](https://render.com/). Free Tier. Oftentimes, the service requires a jumpstart and might take more than 30 seconds to load.
 
+#### Images/Illustrations Source
+
+[M Aka on Vecteezy](https://www.vecteezy.com/members/akarasirithada?license_type=free)
+
 #### Running Locally 
 ---
 *My local environment: Python 3.12, macOS. Steps might be (slightly) different depending on your setup*
