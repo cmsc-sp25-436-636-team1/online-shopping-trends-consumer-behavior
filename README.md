@@ -11,6 +11,17 @@ This is a Plotly Dash application for analyzing the behavioral analysis of Amazo
 - [Dash Bootstrap Components](https://dash-bootstrap-components.opensource.faculty.ai/)
 - [Pandas](https://pandas.pydata.org/)
 
+#### Project Structure Overview
+
+| Section          | Purpose                                                   |
+| ---------------- | --------------------------------------------------------- |
+| `assets/`        | Static files (CSS, JS, images) used globally by the app   |
+| `layout/`        | App layout structure and reusable visual components       |
+| `pages/`         | Individual pages in Dash's multi-page app structure       |
+| `query_scripts/` | Scripts for preprocessing and augmenting dataset features |
+
+---
+
 #### Important: Environment Variables 
 ---
 Need env variable file storing database connection url
