@@ -73,7 +73,7 @@ layout = html.Div([
     ], bg="light"),
 
 
-    # 2) Dataset (three buttons under the paragraph)
+    # 2) Dataset
     section([
     dbc.Container([
         dbc.Row(
@@ -89,7 +89,6 @@ layout = html.Div([
 
                 dbc.Col(
                     [
-                        # Title
                         html.Div(
                             html.H2(
                                 "About the Dataset",
@@ -209,7 +208,6 @@ layout = html.Div([
                 **{"data-aos": "fade-up", "data-aos-delay": "200"}
             ),
 
-            # NEW: Dashboard Tab Descriptions
             html.Div(
                 [
                     dbc.Row([
@@ -284,7 +282,7 @@ layout = html.Div([
 
 @callback(
     Output("record-count-button", "children"),
-    Input("record-count-button", "id")  # triggers once on page load
+    Input("record-count-button", "id") 
 )
 def update_record_count(_):
     try:

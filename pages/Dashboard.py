@@ -424,7 +424,6 @@ layout = dbc.Container(fluid=True, style={"min-height": "93vh", "backgroundColor
                 ], width=4),
             ], className="my-3", style={"font-size": "smaller"}),
 
-            # Row 2: Box plot + heatmap
             dbc.Row([
                 dbc.Col(FigureCard(
                     "Review Importance by Purchase Frequency",
@@ -695,7 +694,7 @@ def update_demographics_tab(active_tab, genders, age_cats, mode):
     Input("dashboard-tabs",             "active_tab"),
     Input("gender-filter-corr",         "value"),
     Input("age-cat-filter-corr",        "value"),
-    Input("product-cat-filter-corr",    "value"),   # new input
+    Input("product-cat-filter-corr",    "value"),  
 )
 def update_correlation_heatmap(active_tab, genders, age_cats, product_values):
     if active_tab != "tab-corr":
@@ -707,7 +706,6 @@ def update_correlation_heatmap(active_tab, genders, age_cats, product_values):
     if age_cats:
         dff = dff[dff["age_category"].isin(age_cats)]
     if product_values:
-        # df was exploded on purchase_categories, so this filters correctly
         dff = dff[dff["purchase_categories"].isin(product_values)]
 
     heat_data = pd.crosstab(
@@ -810,12 +808,10 @@ def update_consumer_overview_tab(genders, ages, products, display_mode, view, ac
         prod_totals["RawCount"] / prod_totals["RawCount"].sum() * 100
     )
 
-    # 3) (Re)build the three “overview” variants
     metric = "Pct of Purchases" if display_mode=="percent" else "RawCount"
     label  = "% of Total Purchases" if display_mode=="percent" else "Raw Count"
     fmt    = ".1f%" if display_mode=="percent" else None
 
-    # --- 1) Overall distribution ---
     fig_overall = px.bar(
         overall,
         x=metric, y="purchase_categories",
@@ -1056,11 +1052,6 @@ def update_bubble_chart(genders, ages, products, view_mode, active_tab):
 
     return fig, title, caption, gender_options, age_options, product_options
 
-from dash import Input, Output, callback
-from dash.exceptions import PreventUpdate
-import plotly.express as px
-import pandas as pd
-import numpy as np
 
 @callback(
     Output({"type": "graph", "index": "imp-by-freq"},  "figure"),
