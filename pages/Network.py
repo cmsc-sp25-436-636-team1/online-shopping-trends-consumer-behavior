@@ -144,7 +144,6 @@ fig = go.Figure(
     frames=frames
 )
 fig.update_layout(
-    # title="Dynamic spring-layout: adding one record at a time",
     margin=dict(l=20, r=20, t=50, b=80),
     xaxis=dict(visible=False, autorange=False, range=[xmin, xmax]),
     yaxis=dict(visible=False, autorange=False, range=[ymin, ymax]),

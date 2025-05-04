@@ -1,5 +1,7 @@
 [Link to App](https://online-shopping-trends-consumer-behavior.onrender.com)
 
+Final Project Class CMSC 436/636 Data Visualization
+
 This is a Plotly Dash application for analyzing the behavioral analysis of Amazon's consumers consists of a comprehensive collection of customer interactions, browsing patterns within the Amazon ecosystem.
 
 #### Built With
