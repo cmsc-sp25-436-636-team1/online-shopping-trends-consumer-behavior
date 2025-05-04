@@ -52,8 +52,6 @@ purchase_categories = df['purchase_categories'].dropna().unique().tolist()
 rating_accuracy_options = df['rating_accuracy'].dropna().unique().tolist()
 shopping_satisfaction_options = df['shopping_satisfaction'].dropna().unique().tolist()
 
-
-# Use the correct column name: 'purchase_categories'
 all_categories = df['purchase_categories'].dropna().astype(str).str.split(';')
 flat_list = [item.strip() for sublist in all_categories for item in sublist if isinstance(sublist, list)]
 unique_categories = sorted(set(flat_list))
@@ -218,7 +216,7 @@ def categorize_age(age):
     
 @callback(
     Output("form-submit-message", "children"),
-    Output("redirect", "href"),  # NEW
+    Output("redirect", "href"),
     Input("submit-button", "n_clicks"),
     State("age", "value"),
     State("gender", "value"),
