@@ -1,4 +1,4 @@
-[Link to App](https://online-shopping-trends-consumer-behavior.onrender.com)
+[Link to App](https://online-shopping-trends-consumer-behavior.onrender.com/Home)
 
 Final Project Class CMSC 436/636 Data Visualization
 
